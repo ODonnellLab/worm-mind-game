@@ -1,0 +1,365 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #1c2230;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --text-dim: #6e7681;
+  --accent: #58a6ff;
+  --accent2: #3fb950;
+  --accent3: #f78166;
+  --accent4: #d2a8ff;
+  --accent5: #ffa657;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── NAV ── */
+.site-header {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  gap: 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  flex-shrink: 0;
+}
+.site-logo {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent2);
+  text-decoration: none;
+  padding-right: 2rem;
+  border-right: 1px solid var(--border);
+  white-space: nowrap;
+}
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex: 1;
+}
+.site-nav a {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.site-nav a:hover, .site-nav a.active { color: var(--text); }
+.nav-game-link, .nav-wiki-link {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent2) !important;
+  margin-left: auto;
+}
+
+/* ── GAME LAYOUT ── */
+.game-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  gap: 1rem;
+}
+
+.game-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.canvas-container {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+#game-canvas {
+  display: block;
+  image-rendering: pixelated;
+}
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(13, 17, 23, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.modal-overlay.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  width: min(580px, 90%);
+  overflow: hidden;
+  font-family: var(--sans);
+}
+
+.modal-header {
+  padding: 0.6rem 1rem;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--accent4);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.modal-body {
+  padding: 1.25rem 1rem;
+}
+
+.modal-narrative {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--text);
+  margin-bottom: 1.25rem;
+  white-space: pre-line;
+}
+
+.modal-choices { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.choice-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.6rem 0.75rem;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+  font-family: var(--sans);
+  width: 100%;
+}
+.choice-btn:hover, .choice-btn:focus {
+  border-color: var(--accent);
+  background: rgba(88, 166, 255, 0.06);
+  outline: none;
+}
+.choice-key {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  margin-right: 0.5rem;
+}
+.choice-label { font-size: 13px; color: var(--text); }
+.choice-sublabel { font-size: 11px; color: var(--text-dim); margin-top: 0.15rem; }
+
+/* explanation shown after choosing */
+.choice-explanation {
+  display: none;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-muted);
+  padding: 0.75rem;
+  background: rgba(63, 185, 80, 0.06);
+  border-left: 2px solid var(--accent2);
+  border-radius: 0 4px 4px 0;
+  margin-top: 0.5rem;
+}
+.choice-explanation.visible { display: block; }
+
+.modal-footer {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.footer-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.footer-btn:hover { border-color: var(--accent); color: var(--text); }
+.footer-btn .key { color: var(--accent); margin-right: 0.3rem; }
+
+.continue-btn {
+  background: var(--accent2);
+  border: none;
+  border-radius: 4px;
+  color: #000;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+  margin-left: auto;
+  display: none;
+}
+.continue-btn.visible { display: block; }
+
+/* papers accordion */
+.papers-section { margin-top: 0.5rem; }
+.papers-list {
+  display: none;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface2);
+  border-radius: 4px;
+}
+.papers-list.visible { display: flex; }
+.papers-list a {
+  font-size: 12px;
+  color: var(--accent);
+  text-decoration: none;
+}
+.papers-list a:hover { text-decoration: underline; }
+
+/* ── ENDPOINT MODAL ── */
+.endpoint-card {
+  background: var(--surface);
+  border: 1px solid var(--accent4);
+  border-radius: 10px;
+  width: min(620px, 92%);
+  overflow: hidden;
+}
+.endpoint-header {
+  padding: 0.6rem 1rem;
+  background: rgba(210, 168, 255, 0.08);
+  border-bottom: 1px solid var(--accent4);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--accent4);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.endpoint-body { padding: 1.5rem 1.25rem; }
+.endpoint-narrative {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--text);
+  white-space: pre-line;
+  margin-bottom: 1.5rem;
+}
+.endpoint-cta {
+  display: inline-block;
+  background: var(--accent2);
+  color: #000;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0.6rem 1.25rem;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+.endpoint-cta:hover { opacity: 0.85; }
+
+/* ── LIGHTBOX ── */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.lightbox-overlay.visible { opacity: 1; pointer-events: all; }
+.lightbox-overlay img {
+  max-width: 90vw;
+  max-height: 85vh;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+.lightbox-close {
+  position: absolute;
+  top: 1rem; right: 1.5rem;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+/* ── CUTSCENE ── */
+.cutscene-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent2);
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+  max-width: 400px;
+  padding: 0.75rem 1rem;
+  background: rgba(13, 17, 23, 0.8);
+  border-radius: 4px;
+  z-index: 5;
+}
+.cutscene-text.visible { opacity: 1; }
+
+/* ── PAUSE OVERLAY ── */
+.pause-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(13, 17, 23, 0.92);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  z-index: 20;
+}
+.pause-overlay.visible { display: flex; }
+.pause-overlay .key-row { display: flex; gap: 1rem; }
+.pause-overlay .key { color: var(--accent); }
+
+@media (max-width: 700px) {
+  .game-wrapper { padding: 0.75rem; }
+  .canvas-container { overflow-x: auto; }
+}

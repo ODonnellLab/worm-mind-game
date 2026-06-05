@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explore the Mind of the Worm — ODonnell Lab</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a href="https://odonnell-lab-website.pages.dev" class="site-logo">⬡ ODONNELL LAB</a>
+  <nav class="site-nav">
+    <a href="https://odonnell-lab-website.pages.dev/index.html">Home</a>
+    <a href="https://odonnell-lab-website.pages.dev/research.html">Research</a>
+    <a href="https://odonnell-lab-website.pages.dev/people.html">People</a>
+    <a href="https://odonnell-lab-website.pages.dev/publications.html">Publications</a>
+    <a href="https://odonnell-lab-website.pages.dev/news.html">News</a>
+    <a href="https://odonnell-lab-website.pages.dev/join.html">Join Us</a>
+    <a href="https://lab-tool-wiki.pages.dev" class="nav-wiki-link" target="_blank" rel="noopener">Lab Wiki ↗</a>
+  </nav>
+</header>
+
+<div class="game-wrapper">
+  <div class="game-title">Explore the Mind of the Worm</div>
+
+  <div class="canvas-container">
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Cutscene text overlay -->
+    <div class="cutscene-text" id="cutscene-text"></div>
+
+    <!-- Prompt modal -->
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal-card" id="modal-card">
+        <div class="modal-header" id="modal-header"></div>
+        <div class="modal-body">
+          <div class="modal-narrative" id="modal-narrative"></div>
+          <div class="modal-choices" id="modal-choices"></div>
+          <div class="papers-section" id="papers-section" style="display:none;">
+            <button class="footer-btn" id="papers-toggle"><span class="key">[H]</span> How do we know this?</button>
+            <div class="papers-list" id="papers-list"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="footer-btn" id="image-btn" style="display:none;"><span class="key">[I]</span> Image</button>
+          <button class="continue-btn" id="continue-btn">Continue →</button>
+        </div>
+      </div>
+
+      <!-- Endpoint card (shown instead of modal-card at endpoints) -->
+      <div class="endpoint-card" id="endpoint-card" style="display:none;">
+        <div class="endpoint-header">THE EDGE OF KNOWLEDGE</div>
+        <div class="endpoint-body">
+          <div class="endpoint-narrative" id="endpoint-narrative"></div>
+          <a href="https://odonnell-lab-website.pages.dev/join.html" class="endpoint-cta" id="endpoint-cta"></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pause overlay -->
+    <div class="pause-overlay" id="pause-overlay">
+      <div>PAUSED</div>
+      <div class="key-row">
+        <span><span class="key">↑↓←→</span> move</span>
+        <span><span class="key">1 2 3</span> choose</span>
+        <span><span class="key">H</span> papers</span>
+        <span><span class="key">I</span> image</span>
+        <span><span class="key">ESC</span> resume</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox-overlay" id="lightbox">
+  <span class="lightbox-close" id="lightbox-close">[ESC] close</span>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
