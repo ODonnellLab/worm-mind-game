@@ -55,8 +55,12 @@ let state = {
   nodeId: null,
   history: [],
   pendingNext: null,
-  queuedNodeId: null,    // next node waiting for movement
-  movesRemaining: 0,     // moves required before queuedNodeId fires
+  queuedNodeId: null,
+  movesRemaining: 0,
+  savedQueue: null,          // paused queue during sidebar prompts
+  pathogenPromptFired: false,
+  predatorPromptFired: false,
+  locomotionPromptFired: false,
   worm: { x: 150, y: 100, dir: 'right', tail: [] },
   paused: false,
   cutsceneActive: false,
@@ -169,17 +173,18 @@ function drawWorldCell(vc, vr, wx, wy) {
     return;
   }
 
-  // Predators — purple, spread out, trap-like filaments
+  // Predators — purple, sharp spike/web pattern
   const predDist = minDistTo(wx, wy, PREDATORS);
   if (predDist < 6) {
-    const a = Math.min(0.85, (6 - predDist) / 5);
-    const ch = predDist < 2 ? '⊕' : (noise < 0.4 ? '─' : noise < 0.7 ? '│' : '┼');
+    const a = Math.min(0.90, (6 - predDist) / 4.5);
+    const ch = predDist < 1.5 ? '╬'
+      : noise < 0.25 ? '<' : noise < 0.50 ? '>' : noise < 0.70 ? '─' : '/';
     drawChar(ch, vc, vr, `rgba(180,130,255,${a})`);
     return;
   }
-  if (predDist < 11 && noise < 0.35) {
-    const a = Math.min(0.40, (11 - predDist) / 10) * 0.6;
-    const ch = noise < 0.5 ? '─' : '│';
+  if (predDist < 12 && noise < 0.32) {
+    const a = Math.min(0.45, (12 - predDist) / 11) * 0.65;
+    const ch = noise < 0.33 ? '<' : noise < 0.66 ? '>' : '─';
     drawChar(ch, vc, vr, `rgba(180,130,255,${a})`);
     return;
   }
@@ -325,6 +330,19 @@ function moveWorm(dir) {
   // Countdown to queued prompt
   if (state.queuedNodeId && state.movesRemaining > 0) {
     state.movesRemaining--;
+
+    // Mid-countdown: locomotion question fires once at 15 moves remaining
+    if (state.movesRemaining === 15 && !state.locomotionPromptFired) {
+      state.locomotionPromptFired = true;
+      state.savedQueue = { nodeId: state.queuedNodeId, movesRemaining: state.movesRemaining };
+      state.queuedNodeId = null;
+      state.movesRemaining = 0;
+      state.phase = 'prompt';
+      render();
+      setTimeout(() => showNode('locomotion-forward'), 300);
+      return;
+    }
+
     if (state.movesRemaining === 0) {
       const qId = state.queuedNodeId;
       state.queuedNodeId = null;
@@ -335,8 +353,33 @@ function moveWorm(dir) {
     }
   }
 
-  // First bacteria encounter
+  // Sidebar encounters — save any active queue, fire prompt, restore after
+  function fireSidebar(nodeId) {
+    if (state.queuedNodeId) {
+      state.savedQueue = { nodeId: state.queuedNodeId, movesRemaining: state.movesRemaining };
+      state.queuedNodeId = null;
+      state.movesRemaining = 0;
+    }
+    state.phase = 'prompt';
+    render();
+    setTimeout(() => showNode(nodeId), 300);
+  }
+
+  if (!state.pathogenPromptFired && minDistTo(nx, ny, PATHOGEN_CLUSTERS) < 4) {
+    state.pathogenPromptFired = true;
+    fireSidebar('pathogen-encounter');
+    return;
+  }
+
+  if (!state.predatorPromptFired && minDistTo(nx, ny, PREDATORS) < 5) {
+    state.predatorPromptFired = true;
+    fireSidebar('predator-encounter');
+    return;
+  }
+
+  // First good bacteria encounter — reset hunger
   if (!state.queuedNodeId && minDistToCluster(nx, ny) < 4 && state.phase === 'exploration') {
+    state.hunger = 0;
     state.phase = 'prompt';
     render();
     setTimeout(() => showNode('detect'), 400);
@@ -430,11 +473,20 @@ function continueGame() {
   const nextId = state.pendingNext;  // capture BEFORE clearing — fixes freeze bug
   state.pendingNext = null;
 
+  // Restore any paused queue (from sidebar prompts)
+  if (state.savedQueue) {
+    state.queuedNodeId   = state.savedQueue.nodeId;
+    state.movesRemaining = state.savedQueue.movesRemaining;
+    state.savedQueue     = null;
+    state.phase = 'exploration';
+    render();
+    return;
+  }
+
   if (nextId) {
     const next = getNode(nextId);
     if (next) {
-      // Require movement before the next prompt fires
-      state.queuedNodeId  = nextId;
+      state.queuedNodeId   = nextId;
       state.movesRemaining = MOVES_BETWEEN_PROMPTS;
       state.phase = 'exploration';
       render();

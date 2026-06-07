@@ -28,6 +28,89 @@
   },
 
   "nodes": {
+    "locomotion-forward": {
+      "id": "locomotion-forward",
+      "phase": "MOVEMENT · FORWARD AND REVERSE",
+      "image": "Feeding_gcamp.gif",
+      "narrative": "You're moving through the soil. Your body undulates in sinusoidal waves — but you can also reverse direction entirely. What controls whether you go forward or backward?",
+      "choices": [
+        {
+          "id": "muscles",
+          "label": "My muscles just contract differently",
+          "explanation": "True — but the muscles are following orders from motor neurons. The pattern of dorsal and ventral muscle activation creates the wave. Which direction that wave travels depends on command interneurons upstream of the motor neurons."
+        },
+        {
+          "id": "command-neurons",
+          "label": "Command interneurons — different sets drive forward vs reverse",
+          "explanation": "Exactly. AVB interneurons drive forward movement; AVA drives reverse. They compete to control the same motor neurons in the ventral nerve cord. Neuromodulators — dopamine, serotonin, octopamine — shift the balance between them based on context: is there food nearby? Is the gut colonized?"
+        },
+        {
+          "id": "touch",
+          "label": "A touch signal told me to reverse",
+          "explanation": "Sometimes — mechanosensory neurons directly trigger reversals on contact. But most reversals happen without any touch: the nervous system generates them spontaneously as a searching strategy when food is absent. It's a built-in exploratory program."
+        }
+      ],
+      "papers": [
+        { "label": "Chalfie et al., J. Neurosci. 1985", "url": "https://doi.org/10.1523/JNEUROSCI.05-04-00956.1985" },
+        { "label": "Bargmann, WormBook 2006", "url": "https://doi.org/10.1895/wormbook.1.46.1" }
+      ]
+    },
+
+    "pathogen-encounter": {
+      "id": "pathogen-encounter",
+      "phase": "DANGER · HARMFUL BACTERIA",
+      "image": "gut-bacteria.jpg",
+      "narrative": "These bacteria are producing chemicals that signal damage — membrane toxins, immune activators. Your sensory neurons are firing a warning. What do you do?",
+      "choices": [
+        {
+          "id": "avoid",
+          "label": "Reverse and get away",
+          "explanation": "The right reflex. ASH nociceptive neurons detect repellent chemicals and drive rapid reversals via AVA command interneurons. This avoidance response is faster than approach — but it can be suppressed when hunger is high enough."
+        },
+        {
+          "id": "assess",
+          "label": "Get closer to investigate",
+          "explanation": "A hungry worm suppresses avoidance. Whether eating potentially harmful bacteria is adaptive (some 'bad-smelling' bacteria are actually nutritious) or maladaptive is an active area of research — studied by screening the behavioral responses to diverse natural bacterial strains."
+        },
+        {
+          "id": "eat",
+          "label": "Eat them anyway — I'm hungry enough",
+          "explanation": "Some pathogens are only dangerous in large doses or require gut colonization to cause harm. C. elegans can ingest mildly pathogenic bacteria and survive. But others kill via toxins or immune activation. The sensory system evolved to make this distinction — imperfectly."
+        }
+      ],
+      "papers": [
+        { "label": "Schiffer et al., PLOS Pathogens 2021", "url": "https://doi.org/10.1371/journal.ppat.1010112" },
+        { "label": "Bargmann & Horvitz, Science 1991", "url": "https://doi.org/10.1126/science.1749929" }
+      ]
+    },
+
+    "predator-encounter": {
+      "id": "predator-encounter",
+      "phase": "DANGER · PREDATOR DETECTED",
+      "image": "neurons.png",
+      "narrative": "Ahead: a network of sharp filaments from a nematophagous fungus. It traps worms in constricting rings that close within milliseconds. Can you detect this before you're caught?",
+      "choices": [
+        {
+          "id": "smell-predator",
+          "label": "I can smell fungal chemicals from a distance",
+          "explanation": "Yes — C. elegans detects volatile compounds from nematophagous fungi and avoids them before contact. This is an evolved response: wild populations with fungal predators show stronger avoidance than lab strains. Olfaction is your best early warning system."
+        },
+        {
+          "id": "feel-predator",
+          "label": "I feel the physical structure on contact",
+          "explanation": "By then it may be too late. Constricting rings close in under 100ms. Touch-based detection works for slower predators, but for rapidly-closing fungal traps, chemical detection is critical. The mechanosensory system can trigger escape after contact — if there's still time."
+        },
+        {
+          "id": "invisible",
+          "label": "I can't detect it — this is invisible danger",
+          "explanation": "In a completely novel environment, possibly. But worms raised near nematophagous fungi develop avoidance — suggesting learning and memory shape the anti-predator response. The olfactory system can be trained by experience, even without prior contact."
+        }
+      ],
+      "papers": [
+        { "label": "Bargmann, WormBook 2006", "url": "https://doi.org/10.1895/wormbook.1.46.1" }
+      ]
+    },
+
     "detect": {
       "id": "detect",
       "phase": "FINDING FOOD",
