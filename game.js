@@ -8,6 +8,8 @@ const GAME_H  = VIEW_H - 2;          // rows used for world (bottom 2 = status b
 const CELL_W  = 12,  CELL_H  = 16;
 const JOIN_URL = 'https://odonnell-lab-website.pages.dev/join.html';
 
+const MOVES_BETWEEN_PROMPTS = 25;  // steps required between each question
+
 const HUNGER_THRESHOLDS = {
   HINT:     20,
   CUT1:     40,
@@ -16,17 +18,32 @@ const HUNGER_THRESHOLDS = {
   CRITICAL: 90,
 };
 
-// Bacteria clusters spread across the world. Worm starts at (150, 100).
-// Nearest cluster is ~25 cells away so player discovers it after brief exploration.
+// Good bacteria clusters (green) — food
 const BACTERIA_CLUSTERS = [
   { x: 170, y: 115 },
-  { x: 120, y: 78  },
+  { x: 120, y:  78 },
   { x: 205, y: 135 },
   { x:  88, y: 150 },
   { x: 232, y:  68 },
   { x: 255, y: 145 },
   { x:  62, y:  88 },
   { x: 175, y: 172 },
+];
+
+// Pathogenic bacteria (red/orange) — dangerous, trigger aversion prompts
+const PATHOGEN_CLUSTERS = [
+  { x: 145, y: 130 },
+  { x: 200, y:  90 },
+  { x:  95, y: 115 },
+  { x: 240, y: 160 },
+];
+
+// Predators (purple) — nematophagous fungi / predatory bacteria; worm avoids
+const PREDATORS = [
+  { x: 160, y:  85 },
+  { x: 115, y: 145 },
+  { x: 220, y: 115 },
+  { x:  75, y:  60 },
 ];
 
 // ── STATE ────────────────────────────────────────────────────────────────────
@@ -38,6 +55,8 @@ let state = {
   nodeId: null,
   history: [],
   pendingNext: null,
+  queuedNodeId: null,    // next node waiting for movement
+  movesRemaining: 0,     // moves required before queuedNodeId fires
   worm: { x: 150, y: 100, dir: 'right', tail: [] },
   paused: false,
   cutsceneActive: false,
@@ -84,14 +103,16 @@ function cellNoise(wx, wy) {
 
 // ── DISTANCE HELPERS ──────────────────────────────────────────────────────────
 
-function minDistToCluster(wx, wy) {
+function minDistTo(wx, wy, list) {
   let min = Infinity;
-  for (const c of BACTERIA_CLUSTERS) {
+  for (const c of list) {
     const d = Math.sqrt((wx - c.x) ** 2 + (wy - c.y) ** 2);
     if (d < min) min = d;
   }
   return min;
 }
+
+function minDistToCluster(wx, wy) { return minDistTo(wx, wy, BACTERIA_CLUSTERS); }
 
 // ── WORLD CELL RENDERING ─────────────────────────────────────────────────────
 
@@ -131,6 +152,35 @@ function drawWorldCell(vc, vr, wx, wy) {
     const a = Math.min(0.40, ((orgR - dist) / orgR) * 0.40);
     const ch = ORG_CHARS[Math.floor(noise * ORG_CHARS.length)];
     drawChar(ch, vc, vr, `rgba(130,200,140,${a})`);
+    return;
+  }
+
+  // Pathogenic bacteria — red/orange, always partially visible
+  const pathDist = minDistTo(wx, wy, PATHOGEN_CLUSTERS);
+  if (pathDist < 5) {
+    const a = Math.min(0.9, (5 - pathDist) / 4);
+    const ch = noise < 0.45 ? '✦' : '∙';
+    drawChar(ch, vc, vr, `rgba(247,129,102,${a})`);
+    return;
+  }
+  if (pathDist < 9 && noise < 0.50) {
+    const a = Math.min(0.55, (9 - pathDist) / 7) * 0.7;
+    drawChar(noise < 0.25 ? '∙' : '·', vc, vr, `rgba(247,129,102,${a})`);
+    return;
+  }
+
+  // Predators — purple, spread out, trap-like filaments
+  const predDist = minDistTo(wx, wy, PREDATORS);
+  if (predDist < 6) {
+    const a = Math.min(0.85, (6 - predDist) / 5);
+    const ch = predDist < 2 ? '⊕' : (noise < 0.4 ? '─' : noise < 0.7 ? '│' : '┼');
+    drawChar(ch, vc, vr, `rgba(180,130,255,${a})`);
+    return;
+  }
+  if (predDist < 11 && noise < 0.35) {
+    const a = Math.min(0.40, (11 - predDist) / 10) * 0.6;
+    const ch = noise < 0.5 ? '─' : '│';
+    drawChar(ch, vc, vr, `rgba(180,130,255,${a})`);
     return;
   }
 
@@ -202,8 +252,12 @@ function drawStatusBar() {
     [60, 'Very hungry. Something is close.'],
     [80, 'Desperate. You need to eat.'],
   ];
-  let hint = hints[0][1];
-  for (const [t, h] of hints) { if (state.hunger >= t) hint = h; }
+  let hint = state.queuedNodeId
+    ? `Keep moving... (${state.movesRemaining})`
+    : hints[0][1];
+  if (!state.queuedNodeId) {
+    for (const [t, h] of hints) { if (state.hunger >= t) hint = h; }
+  }
 
   ctx.fillStyle = C.dim;
   ctx.fillText(hint, bx + bw + 12, y0 + CELL_H - 3);
@@ -268,9 +322,25 @@ function moveWorm(dir) {
     return;
   }
 
-  if (minDistToCluster(nx, ny) < 4 && state.phase === 'exploration') {
+  // Countdown to queued prompt
+  if (state.queuedNodeId && state.movesRemaining > 0) {
+    state.movesRemaining--;
+    if (state.movesRemaining === 0) {
+      const qId = state.queuedNodeId;
+      state.queuedNodeId = null;
+      state.phase = 'prompt';
+      render();
+      setTimeout(() => showNode(qId), 300);
+      return;
+    }
+  }
+
+  // First bacteria encounter
+  if (!state.queuedNodeId && minDistToCluster(nx, ny) < 4 && state.phase === 'exploration') {
     state.phase = 'prompt';
+    render();
     setTimeout(() => showNode('detect'), 400);
+    return;
   }
 
   render();
@@ -289,6 +359,17 @@ function showCutscene(text) {
 // ── NODE SYSTEM ───────────────────────────────────────────────────────────────
 
 function getNode(id) { return nodes.nodes[id] || null; }
+
+function setModalBgImage(filename) {
+  const img = document.getElementById('modal-bg-image');
+  if (filename) {
+    img.src = `images/${filename}`;
+    img.classList.add('visible');
+  } else {
+    img.classList.remove('visible');
+    img.src = '';
+  }
+}
 
 function showNode(id) {
   const node = getNode(id);
@@ -327,7 +408,7 @@ function showNode(id) {
     papersSection.style.display = 'none';
   }
   document.getElementById('papers-list').classList.remove('visible');
-  document.getElementById('image-btn').style.display = node.image ? 'block' : 'none';
+  setModalBgImage(node.image || null);
   document.getElementById('continue-btn').classList.remove('visible');
   document.getElementById('modal-card').style.display = '';
   document.getElementById('endpoint-card').style.display = 'none';
@@ -345,13 +426,18 @@ function handleChoice(node, choice, expDiv) {
 
 function continueGame() {
   document.getElementById('modal-overlay').classList.remove('visible');
+  setModalBgImage(null);
   const nextId = state.pendingNext;  // capture BEFORE clearing — fixes freeze bug
   state.pendingNext = null;
 
   if (nextId) {
     const next = getNode(nextId);
     if (next) {
-      setTimeout(() => showNode(nextId), 200);
+      // Require movement before the next prompt fires
+      state.queuedNodeId  = nextId;
+      state.movesRemaining = MOVES_BETWEEN_PROMPTS;
+      state.phase = 'exploration';
+      render();
     } else {
       state.phase = 'exploration';
       render();
@@ -397,7 +483,7 @@ function showHungerPrompt() {
   papersList.innerHTML = hp.papers.map(p =>
     `<a href="${p.url}" target="_blank" rel="noopener">→ ${p.label}</a>`).join('');
   document.getElementById('papers-list').classList.remove('visible');
-  document.getElementById('image-btn').style.display = hp.image ? 'block' : 'none';
+  setModalBgImage(hp.image || null);
   document.getElementById('continue-btn').classList.remove('visible');
   document.getElementById('modal-card').style.display = '';
   document.getElementById('endpoint-card').style.display = 'none';
@@ -406,10 +492,24 @@ function showHungerPrompt() {
 
 // ── ENDPOINT ──────────────────────────────────────────────────────────────────
 
+function buildPathSummary() {
+  const lines = [];
+  for (const entry of state.history) {
+    const [nodeId, choiceId] = entry.split(':');
+    const node = getNode(nodeId);
+    if (!node) continue;
+    const choice = node.choices?.find(c => c.id === choiceId);
+    if (choice?.label) lines.push(`· ${choice.label}`);
+  }
+  return lines.length ? 'Your path:\n' + lines.join('\n') + '\n\n' : '';
+}
+
 function showEndpoint(node) {
-  document.getElementById('endpoint-narrative').textContent = node.narrative;
+  const summary = buildPathSummary();
+  document.getElementById('endpoint-narrative').textContent = summary + node.narrative;
   document.getElementById('endpoint-cta').textContent = `→ ${node.cta}`;
   document.getElementById('endpoint-cta').href = JOIN_URL;
+  setModalBgImage(node.image || null);
   document.getElementById('modal-card').style.display = 'none';
   document.getElementById('endpoint-card').style.display = '';
   document.getElementById('modal-overlay').classList.add('visible');
@@ -452,9 +552,6 @@ document.addEventListener('keydown', e => {
   if ((e.key==='h'||e.key==='H') && state.phase==='prompt') {
     document.getElementById('papers-toggle').click(); return;
   }
-  if ((e.key==='i'||e.key==='I') && state.phase==='prompt') {
-    document.getElementById('image-btn').click(); return;
-  }
   if ((e.key==='Enter'||e.key===' ') && state.phase==='prompt') {
     const btn = document.getElementById('continue-btn');
     if (btn.classList.contains('visible')) btn.click();
@@ -464,11 +561,6 @@ document.addEventListener('keydown', e => {
 document.getElementById('continue-btn').addEventListener('click', continueGame);
 document.getElementById('papers-toggle').addEventListener('click', () =>
   document.getElementById('papers-list').classList.toggle('visible'));
-document.getElementById('image-btn').addEventListener('click', () => {
-  const node = getNode(state.nodeId);
-  const img  = node?.image || nodes?.hunger_prompt?.image;
-  if (img) openLightbox(img);
-});
 document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
 document.getElementById('lightbox').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeLightbox();

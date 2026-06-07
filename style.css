@@ -120,13 +120,27 @@ body {
   pointer-events: all;
 }
 
+.modal-bg-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.18;
+  pointer-events: none;
+  display: none;
+}
+.modal-bg-image.visible { display: block; }
+
 .modal-card {
-  background: var(--surface);
+  background: rgba(22, 27, 34, 0.93);
   border: 1px solid var(--border);
   border-radius: 10px;
   width: min(580px, 90%);
   overflow: hidden;
   font-family: var(--sans);
+  position: relative;
+  z-index: 1;
 }
 
 .modal-header {
@@ -252,8 +266,10 @@ body {
 
 /* ── ENDPOINT MODAL ── */
 .endpoint-card {
-  background: var(--surface);
+  background: rgba(22, 27, 34, 0.95);
   border: 1px solid var(--accent4);
+  position: relative;
+  z-index: 1;
   border-radius: 10px;
   width: min(620px, 92%);
   overflow: hidden;
