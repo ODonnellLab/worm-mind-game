@@ -32,7 +32,7 @@
     "locomotion-forward": {
       "id": "locomotion-forward",
       "phase": "MOVEMENT · FORWARD AND REVERSE",
-      "image": "neurons.png",
+      "image": "motor_neurons.png",
       "narrative": "You're moving through the soil. Your body undulates in sinusoidal waves — but you can also reverse direction entirely. What controls whether you go forward or backward?",
       "choices": [
         {
@@ -54,20 +54,21 @@
           "explanation": "Sometimes — mechanosensory neurons directly trigger reversals on contact. But most reversals happen without any touch: the nervous system generates them spontaneously as a searching strategy when food is absent. It's a built-in exploratory program."
         }
       ],
-      "papers": ["bargmann-2006-wormbook-loco", "odonnell-2020-nature"],
+      "papers": ["bargmann-2006-wormbook-loco", "white-1986-phil-trans"],
       "morePapers": []
     },
     "pathogen-encounter": {
       "id": "pathogen-encounter",
       "phase": "DANGER · HARMFUL BACTERIA",
-      "image": "gut-microbiome.jpg",
+      "image": "RedOminousBacteria.png",
       "narrative": "These bacteria are producing chemicals that signal damage — membrane toxins, immune activators. Your sensory neurons are firing a warning. What do you do?",
       "choices": [
         {
           "id": "avoid",
           "label": "Reverse and get away",
           "summary": "You reversed from harmful bacteria, driven by ASH nociceptive neurons detecting repellent chemicals and triggering avoidance via AVA command interneurons.",
-          "explanation": "The right reflex. ASH nociceptive neurons detect repellent chemicals and drive rapid reversals via AVA command interneurons. This avoidance response is faster than approach — but it can be suppressed when hunger is high enough."
+          "explanation": "The right reflex. ASH nociceptive neurons detect repellent chemicals and drive rapid reversals via AVA command interneurons. This avoidance response is faster than approach — but it can be suppressed when hunger is high enough.",
+          "video": "ASH-GCaMP.mp4"
         },
         {
           "id": "assess",
@@ -88,7 +89,7 @@
     "predator-encounter": {
       "id": "predator-encounter",
       "phase": "DANGER · PREDATOR DETECTED",
-      "image": "neurons.png",
+      "image": "motor_neurons.png",
       "narrative": "Ahead: hyphae from a nematophagous fungus. It traps worms in constricting rings that close within milliseconds. But can you detect this as a threat — or does it smell like something good?",
       "choices": [
         {
@@ -126,6 +127,7 @@
       "id": "pharynx-intro",
       "phase": "EATING · PHARYNGEAL PUMPING",
       "image": "Feeding_gcamp.gif",
+      "imagePosition": "right center",
       "narrative": "You're near food. Look at this recording — each flash of green is a calcium signal in a pharyngeal neuron firing as the pharynx pumps. The pharynx is a muscular tube just behind your mouth. It draws bacteria in, grinds them between its ridged walls, and pushes them into your intestine. This is how you eat.",
       "choices": [
         {
@@ -150,7 +152,7 @@
     "detect": {
       "id": "detect",
       "phase": "FINDING FOOD",
-      "image": "neurons.png",
+      "image": "fluorescent_bacteria.png",
       "narrative": "You've found bacteria. Before you eat — how did you know they were there?",
       "choices": [
         {
@@ -197,7 +199,7 @@
     "smell-familiar": {
       "id": "smell-familiar",
       "phase": "SMELL · OLFACTORY MEMORY",
-      "image": "neurons.png",
+      "image": "motor_neurons.png",
       "narrative": "You followed a smell to get here. Nearby are two bacterial patches — one with an odor you've encountered before, one completely new. But memory cuts both ways. Which do you approach?",
       "choices": [
         {
@@ -458,7 +460,7 @@
     "touch-aversive": {
       "id": "touch-aversive",
       "phase": "TOUCH · WARNING SIGNAL",
-      "image": "neurons.png",
+      "image": "motor_neurons.png",
       "narrative": "As you approached the bacteria, a warning signal fired — danger-sensing neurons in your head detected a harsh chemical on the surface. A potential threat. What did you do?",
       "choices": [
         {

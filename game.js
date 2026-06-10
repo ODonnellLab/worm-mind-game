@@ -666,14 +666,32 @@ function showCutscene(text, duration = 2600) {
 
 function getNode(id) { return nodes.nodes[id] || null; }
 
-function setModalBgImage(filename) {
+function setModalBgImage(filename, position) {
   const img = document.getElementById('modal-bg-image');
+  const vid = document.getElementById('modal-bg-video');
+  vid.classList.remove('visible');
+  vid.pause();
   if (filename) {
     img.src = `images/${filename}`;
+    img.style.objectPosition = position || 'center';
     img.classList.add('visible');
   } else {
     img.classList.remove('visible');
     img.src = '';
+  }
+}
+
+function setModalBgVideo(filename) {
+  const img = document.getElementById('modal-bg-image');
+  const vid = document.getElementById('modal-bg-video');
+  img.classList.remove('visible');
+  if (filename) {
+    vid.src = `images/${filename}`;
+    vid.classList.add('visible');
+    vid.play().catch(() => {});
+  } else {
+    vid.classList.remove('visible');
+    vid.src = '';
   }
 }
 
@@ -730,7 +748,7 @@ function showNode(id) {
     papersSection.style.display = 'none';
   }
   papersList.classList.remove('visible');
-  setModalBgImage(node.image || null);
+  setModalBgImage(node.image || null, node.imagePosition);
   document.getElementById('continue-btn').classList.remove('visible');
   document.getElementById('modal-card').style.display    = '';
   document.getElementById('endpoint-card').style.display = 'none';
@@ -745,6 +763,10 @@ function handleChoice(node, choice, expDiv) {
   state.pendingNext     = choice.next || null;
   state.pendingChoiceId = choice.id;
   document.getElementById('continue-btn').classList.add('visible');
+
+  if (choice.video) {
+    setModalBgVideo(choice.video);
+  }
 
   const choicePapers = resolveRefs(choice.papers?.length ? choice.papers : node.papers);
   const papersSection = document.getElementById('papers-section');
@@ -893,7 +915,7 @@ function showEndpoint(node) {
   document.getElementById('endpoint-narrative').textContent = (summary ? summary + '\n\n' : '') + node.narrative;
   document.getElementById('endpoint-cta').textContent = `→ ${node.cta}`;
   document.getElementById('endpoint-cta').href = JOIN_URL;
-  setModalBgImage(node.image || null);
+  setModalBgImage(node.image || null, node.imagePosition);
   document.getElementById('modal-card').style.display = 'none';
   document.getElementById('endpoint-card').style.display = '';
   document.getElementById('modal-overlay').classList.add('visible');
