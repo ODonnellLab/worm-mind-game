@@ -217,7 +217,8 @@ let state = {
   pharynxSeen: false,
   eatUnlocked: false,
   pharynxPendingNodeId: null,
-  pathogenEaten: 0,
+  goodLoad: 0,
+  harmLoad: 0,
   inFoodZone: false,
   nearFoodType: null,
   lastEatTime: 0,
@@ -427,6 +428,43 @@ function drawStatusBar() {
 
   ctx.fillStyle = C.dim;
   ctx.fillText(hint, bx + bw + 12, y0 + CELL_H - 3);
+
+  // ── Gut content meters (row 2 of status bar) ──────────────────────────────
+  const y1 = (VIEW_H - 1) * CELL_H;
+  const gw = 72, gbh = CELL_H - 7;
+
+  ctx.fillStyle = C.muted;
+  ctx.fillText('GUT', 8, y1 + CELL_H - 3);
+
+  // Good bacteria bar (green, faster decay)
+  const gbx = 78, gby = y1 + 4;
+  ctx.fillStyle = '#1c2230';
+  ctx.fillRect(gbx, gby, gw, gbh);
+  if (state.goodLoad > 0) {
+    ctx.fillStyle = C.green;
+    ctx.fillRect(gbx, gby, Math.floor(gw * state.goodLoad / 100), gbh);
+  }
+
+  // Harmful bacteria bar (orange→red, slower decay)
+  const hbx = gbx + gw + 6;
+  ctx.fillStyle = '#1c2230';
+  ctx.fillRect(hbx, gby, gw, gbh);
+  if (state.harmLoad > 0) {
+    ctx.fillStyle = state.harmLoad < 50 ? C.orange : C.red;
+    ctx.fillRect(hbx, gby, Math.floor(gw * state.harmLoad / 100), gbh);
+  }
+
+  // Gut hint text
+  let gutHint = '';
+  if (state.harmLoad > 75)      gutHint = 'Severe gut damage — toxins overwhelming immune response';
+  else if (state.harmLoad > 50) gutHint = 'Toxins accumulating in gut';
+  else if (state.harmLoad > 0)  gutHint = 'Harmful bacteria present';
+  else if (state.goodLoad > 60) gutHint = 'Well colonized — gut-brain signaling active';
+  else if (state.goodLoad > 20) gutHint = 'Bacteria colonizing gut';
+  if (gutHint) {
+    ctx.fillStyle = state.harmLoad > 50 ? C.orange : C.dim;
+    ctx.fillText(gutHint, hbx + gw + 12, y1 + CELL_H - 3);
+  }
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
@@ -436,9 +474,10 @@ function render() {
   ctx.fillStyle = C.bg;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // divider above status bar
+  // dividers above status bar rows
   ctx.fillStyle = '#21262d';
   ctx.fillRect(0, (VIEW_H - 2) * CELL_H, canvas.width, 1);
+  ctx.fillRect(0, (VIEW_H - 1) * CELL_H, canvas.width, 1);
 
   setFont(CELL_H);
   const cam = getCam();
@@ -475,7 +514,9 @@ function moveWorm(dir) {
 
   if (state.phase === 'intro') state.phase = 'exploration';
 
-  state.hunger = Math.min(100, state.hunger + 1);
+  if (state.goodLoad <= 0) state.hunger = Math.min(100, state.hunger + 1);
+  state.goodLoad = Math.max(0, state.goodLoad - 0.3);
+  state.harmLoad = Math.max(0, state.harmLoad - 0.1);
 
   // Bag: energy exhausted → reproduce
   if (state.hunger >= 100) { showBag(); return; }
@@ -923,8 +964,8 @@ function showBag() {
 function continueBag() {
   stopBagArt();
   // Carry pathogen history forward across generations
-  const parentPathogens = state.pathogenEaten > 0
-    ? [...state.parentPathogens, state.pathogenEaten]
+  const parentPathogens = state.harmLoad > 0
+    ? [...state.parentPathogens, Math.round(state.harmLoad)]
     : [...state.parentPathogens];
 
   document.getElementById('bag-card').style.display      = 'none';
@@ -933,7 +974,8 @@ function continueBag() {
   // Reset only energy and per-generation counters; keep position, history, path state
   state.hunger           = 0;
   state.hungerPromptFired = false;
-  state.pathogenEaten    = 0;
+  state.goodLoad         = 0;
+  state.harmLoad         = 0;
   state.cutsceneActive   = false;
   state.paused           = false;
   state.phase            = 'exploration';
@@ -1096,12 +1138,13 @@ function doEat() {
   if (!nearGood && !nearPath) { showCutscene('No food nearby.', 800); return; }
 
   if (nearGood) {
-    state.hunger = Math.max(0, state.hunger - 15);
+    state.hunger  = Math.max(0, state.hunger - 15);
+    state.goodLoad = Math.min(100, state.goodLoad + 20);
     showCutscene('Feeding.', 800);
   } else {
-    state.pathogenEaten++;
-    state.hunger = Math.max(0, state.hunger - 5);
-    if (state.pathogenEaten >= 4) {
+    state.harmLoad = Math.min(100, state.harmLoad + 25);
+    state.hunger   = Math.max(0, state.hunger - 5);
+    if (state.harmLoad >= 100) {
       showDeath(getNode('death-pathogen') || {
         header: 'POISONED',
         narrative: 'The toxins accumulated past the point of recovery.',
@@ -1109,7 +1152,7 @@ function doEat() {
       return;
     }
     showCutscene(
-      state.pathogenEaten === 1 ? 'You eat despite the warning.\nSomething is wrong.'
+      state.harmLoad <= 25 ? 'You eat despite the warning.\nSomething is wrong.'
         : 'You eat again.\nToxins are accumulating.',
       1600
     );
@@ -1153,7 +1196,8 @@ function resetGame(isOffspring = false) {
     pharynxSeen: false,
     eatUnlocked: false,
     pharynxPendingNodeId: null,
-    pathogenEaten: 0,
+    goodLoad: 0,
+    harmLoad: 0,
     inFoodZone: false,
     nearFoodType: null,
     lastEatTime: 0,

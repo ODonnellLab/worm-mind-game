@@ -145,14 +145,20 @@ After all restructuring, update INDEX.md node status table to reflect:
 
 ---
 
-## Gut content meters (to-do)
+## Gut content meters ✅ Done
 
-Add two persistent meters to the status bar or a sidebar showing:
-- **Good bacteria load** — rises when eating good bacteria via [E], decays over time; drives the "colonization" narrative
-- **Harmful bacteria load** — rises when eating pathogens via [E] or pathogen-encounter; triggers escalating warnings and death at threshold
-- Meters should visually reflect the intertissue signaling narrative (gut ↔ nervous system)
-- Consider: good bacteria load could modulate neuromodulatory state (hunger suppression, behavioral change)
-- Data: these meters would replace / complement the current `pathogenEaten` integer counter
+Two meters in a second status bar row labeled "GUT":
+
+| Meter | Color | Gain | Decay/move | Effect |
+|-------|-------|------|------------|--------|
+| Good bacteria load (`goodLoad`) | green | +20 per [E] eat | −0.3 (faster — digested) | hunger freezes while goodLoad > 0 |
+| Harmful bacteria load (`harmLoad`) | orange→red | +25 per [E] eat | −0.1 (slower — colonizes) | death at harmLoad ≥ 100 |
+
+- Replaces the old `pathogenEaten` integer counter with a continuous 0–100 scale
+- **Hunger only increases when goodLoad = 0** — bacteria in gut suppress hunger, reflecting intertissue gut-brain signaling
+- Good bacteria decay faster than harmful: good bacteria are digested and cleared; harmful bacteria colonize and persist
+- Gut hint text appears to the right of the bars: "Bacteria colonizing gut", "Toxins accumulating", etc.
+- `harmLoad` carried into `parentPathogens` on bag continuation for potential transgenerational variants
 
 ---
 
