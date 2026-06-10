@@ -40,11 +40,12 @@
           <div class="modal-choices" id="modal-choices"></div>
           <div class="papers-section" id="papers-section" style="display:none;">
             <button class="footer-btn" id="papers-toggle"><span class="key">[H]</span> How do we know this?</button>
+            <div class="papers-science" id="papers-science"></div>
             <div class="papers-list" id="papers-list"></div>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button class="continue-btn" id="continue-btn">Continue →</button>
+          <div class="modal-actions">
+            <button class="continue-btn" id="continue-btn">Continue →</button>
+          </div>
         </div>
       </div>
 
@@ -54,6 +55,29 @@
         <div class="endpoint-body">
           <div class="endpoint-narrative" id="endpoint-narrative"></div>
           <a href="https://odonnell-lab-website.pages.dev/join.html" class="endpoint-cta" id="endpoint-cta"></a>
+        </div>
+      </div>
+
+      <!-- Death card -->
+      <div class="death-card" id="death-card" style="display:none;">
+        <div class="death-header" id="death-header">YOU DIED</div>
+        <div class="death-body">
+          <div class="death-narrative" id="death-narrative"></div>
+          <button class="death-restart" id="death-restart">→ Try again</button>
+        </div>
+      </div>
+
+      <!-- Bag card (hunger depleted → offspring) -->
+      <div class="bag-card" id="bag-card" style="display:none;">
+        <div class="bag-header">A NEW GENERATION</div>
+        <canvas id="bag-canvas" class="bag-canvas"></canvas>
+        <div class="bag-body">
+          <div class="bag-narrative" id="bag-narrative"></div>
+          <div class="bag-science-row">
+            <button class="footer-btn" id="bag-science-toggle"><span class="key">[H]</span> How do we know this?</button>
+          </div>
+          <div class="bag-science-panel" id="bag-science-panel"></div>
+          <button class="bag-continue" id="bag-continue">→ Continue as offspring</button>
         </div>
       </div>
     </div>

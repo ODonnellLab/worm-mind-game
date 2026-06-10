@@ -8,7 +8,151 @@ const GAME_H  = VIEW_H - 2;          // rows used for world (bottom 2 = status b
 const CELL_W  = 12,  CELL_H  = 16;
 const JOIN_URL = 'https://odonnell-lab-website.pages.dev/join.html';
 
-const MOVES_BETWEEN_PROMPTS = 25;  // steps required between each question
+const MOVES_BETWEEN_PROMPTS = 25;
+
+// ── BAG ART (animated ASCII worm art for the bag/reproduction endpoint) ────────
+
+const BAG_ART = `
+                                                                                                                                                                               ###.    ###########.
+                                                                                                                                                                             ##-  #####         +# -##
+                                                                                                                                                                           ##  ###.            ## ##+
+                                                                                                                                                                         +#- ##-             -#--#+
+                                                                                                                                                                        ## ##.              +# ##
+                                       +############.                                                                                                                  #+ ##               ## ##
+                                 -####+             .#####-                                                                                                          .#-+#.               +# ##
+                              ###+     +############-     +###.                                                                                                     -# ##                 # ##
+                           ###.  .####+             .#####.   ###+                                                                                                 -# ##                 #+##
+                        +##.  ###+                        +###.  +##-                                                                                             +# ##                 ##.#
+                      ###  ###.                               ###+  ###.                                                                                         +# ##                 .# #-
+                   .##. +##.                                     +##-  ##+                                                                                      ## ##                  ####
+                 -##  ###                                           ###  ###                                                                                   ## ##                  -# #.
+               +##  ##.                                               .##+ .##-                                                                               ## ##                   #-##
+             ### -##.                                                    ###  ###                                                                           +#.+#-                   ## #
+           ##+ +##                                                         .##- -##.                                                                      .## ##                     # ##
+        .##- ###                                                              ###  ###                                                                  .## -##                     ##.#
+      ###  ##+                                                                  -##. -##-                                                             -##  ##                       # #+
+   +##-  ##-                                                                       ###  ###                                                         ###  ##                        ####
+ ##-  ###                                                                            -##-  ###                                                   ###. -##.                        +# #
+ # +##-                                                                                 ###  .###                                             ###-  ###                           #.##
+ -#-                                                                                       ###  -###                                      +###   ###-                            ## #
+ +#                                                                                          .###  .###                               ####.   ###-                               # #+
+  #.                                                                                            -###   ####-                    .#####    +###                                  ####
+ ###                                                                                               -###    +######++----+#######-     ####.                                    +# #
+ # ##                                                                                                  ####.                     #####.                                        # ##
+ -# ##                                                                                                     -######++---++#######-                                             ####
+  -#.+##                               -##########                                                                                                                           ## #
+    ## ###                          +###         -##.                                                                                                                       .# #+
+     ### .###-                  ####.  -##########  ###                                                                                                                     #-##
+       ###   +######+++++#######    ###+         -##  ###.                                                                                                                 ##-#
+         .###.                  ####-              .##+  ###                                                                                                              ## #
+             -######+++++######+                      ###  +##.                                                                                                          +# #+
+                                                        .###  ##+                                                                                                       +# ##
+                                                           +##. +##                                                                                                    +# ##
+                                                              ##+ -##                                                                                                 ## ##
+                                                                +## .##                                                                                              ## ##
+                                                                  -## -##                                                                                           ## #+
+                                                                    -## ##-                                                                                       ##.+#.
+                                                                      +#+ ##                                                                                    -## ##
+                                                                        ## -##                                                                                 ## +#+
+                                                                         .## ##-                                                                             ##. ##
+                                                                           +#+ ##.                                                                         ##- ##-
+                                                                             ##. ##-                                                                    .##. ##-
+                                                                               ##  ###                                                                +##  ##-
+                                                                                .##. .###                                                          .###  ##-
+                                                                                   ###   ####                                                    ###  -##.
+                                                                                     .###    ###+                                             ###   ###
+                                                                                         ####   .#####.                                   -###.  ###
+                                                                                             ####     .#######+                      -####-   ###
+                                                                                                -#####         +#####################.    -###.
+`.trim();
+
+const _bagLines    = BAG_ART.split('\n');
+const BAG_ART_COLS = Math.max(..._bagLines.map(l => l.length));
+const BAG_ART_ROWS = _bagLines.length;
+const bagArtSpots  = [];
+for (let r = 0; r < _bagLines.length; r++) {
+  for (let c = 0; c < _bagLines[r].length; c++) {
+    const ch = _bagLines[r][c];
+    if (ch !== ' ') bagArtSpots.push({ r, c, orig: ch });
+  }
+}
+// Body-interior mask: flood-fill inside the worm's inner # boundary.
+//
+// Seed strategy: find the first row (middle third of art) where ## is followed
+// immediately by 10+ spaces.  That transition is unambiguously inner-wall →
+// body cavity — unlike "longest space run" which can land in the exterior loop.
+//
+// Boundary strategy: dilate all # chars diagonally before filling so that
+// staircase corners in the ASCII outline don't create 4-connected leaks.
+const bagBodyMask = (() => {
+  const R = BAG_ART_ROWS, C = BAG_ART_COLS;
+  const mask    = new Uint8Array(R * C);
+  const blocked = new Uint8Array(R * C);
+
+  // Block all non-space chars (outline characters)
+  for (const sp of bagArtSpots) blocked[sp.r * C + sp.c] = 1;
+
+  // Diagonal dilation of # chars only — seals staircase corners
+  for (const sp of bagArtSpots) {
+    if (sp.orig !== '#') continue;
+    for (const [dr, dc] of [[-1,-1],[-1,1],[1,-1],[1,1]]) {
+      const nr = sp.r + dr, nc = sp.c + dc;
+      if (nr >= 0 && nr < R && nc >= 0 && nc < C) blocked[nr * C + nc] = 1;
+    }
+  }
+
+  // Seed: first occurrence of ## immediately followed by ≥10 spaces
+  let seedR = -1, seedC = -1;
+  for (let r = Math.floor(R * 0.25); r < Math.floor(R * 0.75) && seedR < 0; r++) {
+    const line = _bagLines[r] || '';
+    for (let c = 0; c + 2 < line.length && seedR < 0; c++) {
+      if (line[c] !== '#' || line[c + 1] !== '#') continue;
+      // walk to end of this # group
+      let he = c + 1;
+      while (he + 1 < line.length && line[he + 1] === '#') he++;
+      const after = he + 1;
+      if (after >= line.length || line[after] !== ' ') continue;
+      let sp = 0;
+      while (after + sp < line.length && line[after + sp] === ' ') sp++;
+      if (sp >= 10) {
+        seedR = r;
+        seedC = after + Math.min(5, Math.floor(sp / 3));
+      }
+    }
+  }
+
+  if (seedR < 0 || blocked[seedR * C + seedC]) return mask;
+
+  // BFS flood-fill through unblocked space cells only
+  mask[seedR * C + seedC] = 1;
+  const queue = [seedR * C + seedC];
+  let qi = 0;
+  while (qi < queue.length) {
+    const pos = queue[qi++];
+    const r = Math.floor(pos / C), c = pos % C;
+    for (let d = 0; d < 4; d++) {
+      const nr = r + (d === 0 ? -1 : d === 1 ? 1 : 0);
+      const nc = c + (d === 2 ? -1 : d === 3 ? 1 : 0);
+      if (nr < 0 || nr >= R || nc < 0 || nc >= C) continue;
+      const ni = nr * C + nc;
+      if (mask[ni] || blocked[ni]) continue;
+      if ((_bagLines[nr] || '')[nc] === ' ') { mask[ni] = 1; queue.push(ni); }
+    }
+  }
+  return mask;
+})();
+
+// Canvas scaling params — set once in startBagArt, reused every frame
+let bagCW = 4, bagLH = 8, bagOffX = 0, bagOffY = 0;
+
+function isInBagBody(x, y) {
+  const c = Math.round((x - bagOffX) / bagCW);
+  const r = Math.round((y - bagOffY) / bagLH);
+  if (r < 0 || r >= BAG_ART_ROWS || c < 0 || c >= BAG_ART_COLS) return false;
+  return bagBodyMask[r * BAG_ART_COLS + c] === 1;
+}
+
+let bagAnimHandle = null;
 
 const HUNGER_THRESHOLDS = {
   HINT:     20,
@@ -55,12 +199,18 @@ let state = {
   nodeId: null,
   history: [],
   pendingNext: null,
-  queuedNodeId: null,
+  pendingChoiceId: null,
+  proximityNodeId: null,     // next path node — fires when worm returns near bacteria
+  proximityArmed: false,     // true once worm has moved away from bacteria after queuing
+  queuedNodeId: null,        // legacy: locomotion interrupt only
   movesRemaining: 0,
-  savedQueue: null,          // paused queue during sidebar prompts
-  pathogenPromptFired: false,
-  predatorPromptFired: false,
+  explorationMoves: 0,       // moves since last path prompt (for locomotion trigger)
+  savedQueue: null,
+  inPathogenZone: false,
+  inPredatorZone: false,
   locomotionPromptFired: false,
+  visitedClusters: new Set(),
+  parentPathogens: [],
   worm: { x: 150, y: 100, dir: 'right', tail: [] },
   paused: false,
   cutsceneActive: false,
@@ -257,10 +407,12 @@ function drawStatusBar() {
     [60, 'Very hungry. Something is close.'],
     [80, 'Desperate. You need to eat.'],
   ];
-  let hint = state.queuedNodeId
-    ? `Keep moving... (${state.movesRemaining})`
-    : hints[0][1];
-  if (!state.queuedNodeId) {
+  let hint = hints[0][1];
+  if (state.proximityNodeId) {
+    hint = 'Return to the bacteria...';
+  } else if (state.queuedNodeId) {
+    hint = `Keep moving... (${state.movesRemaining})`;
+  } else {
     for (const [t, h] of hints) { if (state.hunger >= t) hint = h; }
   }
 
@@ -316,6 +468,9 @@ function moveWorm(dir) {
 
   state.hunger = Math.min(100, state.hunger + 1);
 
+  // Bag: energy exhausted → reproduce
+  if (state.hunger >= 100) { showBag(); return; }
+
   if (state.hunger === HUNGER_THRESHOLDS.CUT1)
     showCutscene("You're getting hungry.\nSomething is out there...");
   if (state.hunger === HUNGER_THRESHOLDS.CUT2)
@@ -327,22 +482,22 @@ function moveWorm(dir) {
     return;
   }
 
-  // Countdown to queued prompt
+  state.explorationMoves++;
+
+  // Locomotion interrupt: fires 15 moves into the first path choice
+  if (state.proximityNodeId && state.explorationMoves === 15 && !state.locomotionPromptFired) {
+    state.locomotionPromptFired = true;
+    state.savedQueue = { proximityNodeId: state.proximityNodeId };
+    state.proximityNodeId = null;
+    state.phase = 'prompt';
+    render();
+    setTimeout(() => showNode('locomotion-forward'), 300);
+    return;
+  }
+
+  // Legacy countdown (only used if savedQueue restores a move-based queue)
   if (state.queuedNodeId && state.movesRemaining > 0) {
     state.movesRemaining--;
-
-    // Mid-countdown: locomotion question fires once at 15 moves remaining
-    if (state.movesRemaining === 15 && !state.locomotionPromptFired) {
-      state.locomotionPromptFired = true;
-      state.savedQueue = { nodeId: state.queuedNodeId, movesRemaining: state.movesRemaining };
-      state.queuedNodeId = null;
-      state.movesRemaining = 0;
-      state.phase = 'prompt';
-      render();
-      setTimeout(() => showNode('locomotion-forward'), 300);
-      return;
-    }
-
     if (state.movesRemaining === 0) {
       const qId = state.queuedNodeId;
       state.queuedNodeId = null;
@@ -355,7 +510,10 @@ function moveWorm(dir) {
 
   // Sidebar encounters — save any active queue, fire prompt, restore after
   function fireSidebar(nodeId) {
-    if (state.queuedNodeId) {
+    if (state.proximityNodeId) {
+      state.savedQueue = { proximityNodeId: state.proximityNodeId };
+      state.proximityNodeId = null;
+    } else if (state.queuedNodeId) {
       state.savedQueue = { nodeId: state.queuedNodeId, movesRemaining: state.movesRemaining };
       state.queuedNodeId = null;
       state.movesRemaining = 0;
@@ -365,20 +523,38 @@ function moveWorm(dir) {
     setTimeout(() => showNode(nodeId), 300);
   }
 
-  if (!state.pathogenPromptFired && minDistTo(nx, ny, PATHOGEN_CLUSTERS) < 4) {
-    state.pathogenPromptFired = true;
-    fireSidebar('pathogen-encounter');
+  const nowInPathogen = minDistTo(nx, ny, PATHOGEN_CLUSTERS) < 4;
+  if (!state.inPathogenZone && nowInPathogen) {
+    state.inPathogenZone = true;
+    fireSidebar('pathogen-encounter'); return;
+  }
+  state.inPathogenZone = nowInPathogen;
+
+  const nowInPredator = minDistTo(nx, ny, PREDATORS) < 5;
+  if (!state.inPredatorZone && nowInPredator) {
+    state.inPredatorZone = true;
+    fireSidebar('predator-encounter'); return;
+  }
+  state.inPredatorZone = nowInPredator;
+
+  // Arm proximity trigger once worm has moved away from bacteria
+  if (state.proximityNodeId && !state.proximityArmed && minDistToCluster(nx, ny) >= 8) {
+    state.proximityArmed = true;
+  }
+
+  // Proximity-fire queued path node (only after worm has moved away and returned)
+  if (state.proximityNodeId && state.proximityArmed && minDistToCluster(nx, ny) < 4) {
+    const qId = state.proximityNodeId;
+    state.proximityNodeId = null;
+    state.proximityArmed  = false;
+    state.phase = 'prompt';
+    render();
+    setTimeout(() => showNode(qId), 300);
     return;
   }
 
-  if (!state.predatorPromptFired && minDistTo(nx, ny, PREDATORS) < 5) {
-    state.predatorPromptFired = true;
-    fireSidebar('predator-encounter');
-    return;
-  }
-
-  // First good bacteria encounter — reset hunger
-  if (!state.queuedNodeId && minDistToCluster(nx, ny) < 4 && state.phase === 'exploration') {
+  // First good bacteria encounter — reset hunger, fire detect
+  if (!state.proximityNodeId && !state.queuedNodeId && minDistToCluster(nx, ny) < 4 && state.phase === 'exploration') {
     state.hunger = 0;
     state.phase = 'prompt';
     render();
@@ -414,13 +590,25 @@ function setModalBgImage(filename) {
   }
 }
 
+function resolveNode(node) {
+  if (!node.variants) return node;
+  for (const variant of node.variants) {
+    if (variant.requires?.every(r => state.history.includes(r))) {
+      return { ...node, ...variant };
+    }
+  }
+  return node;
+}
+
 function showNode(id) {
-  const node = getNode(id);
-  if (!node) return;
+  const raw  = getNode(id);
+  if (!raw) return;
+  const node = resolveNode(raw);
   state.nodeId = id;
   state.phase  = 'prompt';
 
   if (node.type === 'endpoint') { showEndpoint(node); return; }
+  if (node.type === 'death')    { showDeath(node);    return; }
 
   document.getElementById('modal-header').textContent    = node.phase;
   document.getElementById('modal-narrative').textContent = node.narrative;
@@ -443,6 +631,9 @@ function showNode(id) {
 
   const papersSection = document.getElementById('papers-section');
   const papersList    = document.getElementById('papers-list');
+  const papersScience = document.getElementById('papers-science');
+  papersScience.textContent = node.science || '';
+  papersScience.classList.remove('visible');
   if (node.papers?.length) {
     papersSection.style.display = 'block';
     papersList.innerHTML = node.papers.map(p =>
@@ -450,34 +641,62 @@ function showNode(id) {
   } else {
     papersSection.style.display = 'none';
   }
-  document.getElementById('papers-list').classList.remove('visible');
+  papersList.classList.remove('visible');
   setModalBgImage(node.image || null);
   document.getElementById('continue-btn').classList.remove('visible');
-  document.getElementById('modal-card').style.display = '';
+  document.getElementById('modal-card').style.display    = '';
   document.getElementById('endpoint-card').style.display = 'none';
+  document.getElementById('death-card').style.display    = 'none';
+  document.getElementById('bag-card').style.display      = 'none';
   document.getElementById('modal-overlay').classList.add('visible');
 }
 
 function handleChoice(node, choice, expDiv) {
-  state.history.push(`${node.id}:${choice.id}`);
-  document.querySelectorAll('.choice-explanation').forEach(e => e.classList.remove('visible'));
-  document.querySelectorAll('.choice-btn').forEach(b => b.style.opacity = '0.5');
+  document.querySelectorAll('.choice-btn').forEach(b => { b.disabled = true; b.style.opacity = '0.5'; });
   expDiv.classList.add('visible');
-  state.pendingNext = choice.next || null;
+  state.pendingNext     = choice.next || null;
+  state.pendingChoiceId = choice.id;
   document.getElementById('continue-btn').classList.add('visible');
+
+  const papers = choice.papers?.length ? choice.papers : node.papers;
+  const papersSection = document.getElementById('papers-section');
+  const papersList    = document.getElementById('papers-list');
+  const papersScience = document.getElementById('papers-science');
+  papersScience.textContent = choice.science ?? node.science ?? '';
+  if (papers?.length) {
+    papersSection.style.display = 'block';
+    papersList.innerHTML = papers.map(p =>
+      `<a href="${p.url}" target="_blank" rel="noopener">→ ${p.label}</a>`).join('');
+  }
 }
 
 function continueGame() {
   document.getElementById('modal-overlay').classList.remove('visible');
   setModalBgImage(null);
   const nextId = state.pendingNext;  // capture BEFORE clearing — fixes freeze bug
+  if (state.pendingChoiceId) {
+    if (nextId !== state.nodeId) {  // don't record loop-back choices
+      state.history.push(`${state.nodeId}:${state.pendingChoiceId}`);
+    }
+    state.pendingChoiceId = null;
+  }
   state.pendingNext = null;
+
+  // Loop-back: show same node immediately (e.g. wrong-answer choices)
+  if (nextId === state.nodeId) {
+    setTimeout(() => showNode(nextId), 200);
+    return;
+  }
 
   // Restore any paused queue (from sidebar prompts)
   if (state.savedQueue) {
-    state.queuedNodeId   = state.savedQueue.nodeId;
-    state.movesRemaining = state.savedQueue.movesRemaining;
-    state.savedQueue     = null;
+    if (state.savedQueue.proximityNodeId) {
+      state.proximityNodeId = state.savedQueue.proximityNodeId;
+    } else {
+      state.queuedNodeId   = state.savedQueue.nodeId;
+      state.movesRemaining = state.savedQueue.movesRemaining;
+    }
+    state.savedQueue = null;
     state.phase = 'exploration';
     render();
     return;
@@ -486,8 +705,12 @@ function continueGame() {
   if (nextId) {
     const next = getNode(nextId);
     if (next) {
-      state.queuedNodeId   = nextId;
-      state.movesRemaining = MOVES_BETWEEN_PROMPTS;
+      if (next.type === 'death' || next.type === 'endpoint') {
+        showNode(nextId);
+        return;
+      }
+      state.proximityNodeId = nextId;
+      state.explorationMoves = 0;
       state.phase = 'exploration';
       render();
     } else {
@@ -521,8 +744,7 @@ function showHungerPrompt() {
     choicesEl.appendChild(btn);
     choicesEl.appendChild(expDiv);
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.choice-explanation').forEach(e => e.classList.remove('visible'));
-      document.querySelectorAll('.choice-btn').forEach(b => b.style.opacity = '0.5');
+      document.querySelectorAll('.choice-btn').forEach(b => { b.disabled = true; b.style.opacity = '0.5'; });
       expDiv.classList.add('visible');
       state.pendingNext = null;
       document.getElementById('continue-btn').classList.add('visible');
@@ -537,23 +759,43 @@ function showHungerPrompt() {
   document.getElementById('papers-list').classList.remove('visible');
   setModalBgImage(hp.image || null);
   document.getElementById('continue-btn').classList.remove('visible');
-  document.getElementById('modal-card').style.display = '';
+  document.getElementById('modal-card').style.display    = '';
   document.getElementById('endpoint-card').style.display = 'none';
+  document.getElementById('death-card').style.display    = 'none';
+  document.getElementById('bag-card').style.display      = 'none';
   document.getElementById('modal-overlay').classList.add('visible');
 }
 
 // ── ENDPOINT ──────────────────────────────────────────────────────────────────
 
 function buildPathSummary() {
-  const lines = [];
+  const parts = [];
   for (const entry of state.history) {
     const [nodeId, choiceId] = entry.split(':');
     const node = getNode(nodeId);
     if (!node) continue;
     const choice = node.choices?.find(c => c.id === choiceId);
-    if (choice?.label) lines.push(`· ${choice.label}`);
+    if (!choice || choice.next === nodeId) continue;
+
+    const phaseParts = (node.phase || '').split(' · ');
+    const topic = phaseParts[phaseParts.length - 1];
+    const topicStr = topic.charAt(0).toUpperCase() + topic.slice(1).toLowerCase();
+
+    const action = choice.label
+      .replace(/^I /, 'you ')
+      .replace(/I've/g, "you've")
+      .replace(/I'm/g, "you're")
+      .replace(/ — I /g, ' — you ');
+
+    const firstSentence = choice.explanation
+      ? (choice.explanation.match(/^[^.!?]+[.!?]/)?.[0] ?? '')
+      : '';
+
+    parts.push(firstSentence
+      ? `${topicStr}: ${action}. ${firstSentence}`
+      : `${topicStr}: ${action}.`);
   }
-  return lines.length ? 'Your path:\n' + lines.join('\n') + '\n\n' : '';
+  return parts.length ? parts.join('\n\n') + '\n\n' : '';
 }
 
 function showEndpoint(node) {
@@ -566,6 +808,233 @@ function showEndpoint(node) {
   document.getElementById('endpoint-card').style.display = '';
   document.getElementById('modal-overlay').classList.add('visible');
   state.phase = 'endpoint';
+}
+
+// ── DEATH ENDPOINT ────────────────────────────────────────────────────────────
+
+function showDeath(node) {
+  stopBagArt();
+  document.getElementById('death-narrative').textContent = node.narrative || '';
+  document.getElementById('death-header').textContent    = node.header    || 'YOU DIED';
+  document.getElementById('modal-card').style.display    = 'none';
+  document.getElementById('endpoint-card').style.display = 'none';
+  document.getElementById('bag-card').style.display      = 'none';
+  document.getElementById('death-card').style.display    = '';
+  document.getElementById('modal-overlay').classList.add('visible');
+  setModalBgImage(null);
+  state.phase = 'endpoint';
+}
+
+// ── BAG ENDPOINT ──────────────────────────────────────────────────────────────
+
+const BAG_SCIENCE = "C. elegans embryos develop inside the mother and, when she runs out of food, the eggs hatch internally. The L1 larvae consume her from within — digesting her body to fuel their own development. This is called the \"bag of worms\" (bag) phenotype. It is not a failure mode; it is a programmed strategy for transmitting the mother's energy reserves to the next generation.\n\nWhat gets transmitted beyond nutrients is an open question. Exposure to certain pathogens changes small RNA populations that can persist across multiple generations — enough for offspring to mount a faster immune response to the same threat. Whether general nutritional or behavioral history is similarly transmitted remains unknown.";
+const BAG_PAPERS = [
+  { label: "Kaletsky et al. 2020 — small RNA inheritance (Nature)", href: "https://doi.org/10.1038/s41586-020-2963-8" },
+  { label: "Moore et al. 2019 — transgenerational epigenetic memory (Cell)", href: "https://doi.org/10.1016/j.cell.2019.01.040" },
+];
+
+function showBag() {
+  const summary = buildPathSummary();
+  const text = summary +
+    "You have run out of energy.\n\n" +
+    "You begin laying eggs — but there's no food left. Your eggs hatch inside you. " +
+    "The larvae eat your intestine first, then work outward. Your body becomes their first meal. " +
+    "This is not a tragedy. It is the plan.\n\n" +
+    "A new generation begins, fed by everything you were.\n\n" +
+    "Not everything is lost across generations.";
+  document.getElementById('bag-narrative').textContent    = text;
+  // wire [H] toggle
+  const toggle = document.getElementById('bag-science-toggle');
+  const panel  = document.getElementById('bag-science-panel');
+  if (toggle && panel) {
+    toggle.onclick = () => panel.classList.toggle('visible');
+    panel.innerHTML = `<p>${BAG_SCIENCE.replace(/\n\n/g,'</p><p>')}</p>` +
+      BAG_PAPERS.map(p => `<a href="${p.href}" target="_blank" rel="noopener">${p.label}</a>`).join('');
+  }
+  document.getElementById('modal-card').style.display    = 'none';
+  document.getElementById('endpoint-card').style.display = 'none';
+  document.getElementById('death-card').style.display    = 'none';
+  document.getElementById('bag-card').style.display      = '';
+  document.getElementById('modal-overlay').classList.add('visible');
+  setModalBgImage(null);
+  state.phase = 'endpoint';
+  startBagArt();
+}
+
+// ── BAG ART ANIMATION ─────────────────────────────────────────────────────────
+
+// Baby worm state (populated in startBagArt)
+let bagWorms = null;
+
+function initBagWorms() {
+  // Only seed from cells where all 4 neighbours are also inside the mask —
+  // ensures worms start well away from the boundary.
+  const C = BAG_ART_COLS, R = BAG_ART_ROWS;
+  const candidates = [];
+  for (let r = 1; r < R - 1; r++) {
+    for (let c = 1; c < C - 1; c++) {
+      if (bagBodyMask[r * C + c] &&
+          bagBodyMask[(r - 1) * C + c] && bagBodyMask[(r + 1) * C + c] &&
+          bagBodyMask[r * C + (c - 1)] && bagBodyMask[r * C + (c + 1)]) {
+        candidates.push([bagOffX + (c + 0.5) * bagCW, bagOffY + (r + 0.5) * bagLH]);
+      }
+    }
+  }
+  if (candidates.length === 0) return;
+  bagWorms = [];
+  for (let i = 0; i < 25; i++) {
+    const [px, py] = candidates[Math.floor(Math.random() * candidates.length)];
+    bagWorms.push({
+      x: px, y: py,
+      angle: Math.random() * Math.PI * 2,
+      speed: 0.4 + Math.random() * 0.5,
+      phase: Math.random() * Math.PI * 2,
+      freq:  0.55 + Math.random() * 0.35,   // per-worm undulation frequency
+      amp:   1.4  + Math.random() * 1.0,    // per-worm wiggle amplitude multiplier
+      length: 9 + Math.floor(Math.random() * 5),
+    });
+  }
+}
+
+function drawBagArt() {
+  const cv = document.getElementById('bag-canvas');
+  if (!cv) return;
+  const ctx2 = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+
+  // ── Big worm outline (dim static background) ───────────────────────────────
+  const fs = bagCW / 0.615;
+  ctx2.fillStyle = '#0d1117';
+  ctx2.fillRect(0, 0, W, H);
+  ctx2.font = `${fs}px IBM Plex Mono, monospace`;
+  ctx2.shadowBlur = 0;
+
+  for (const sp of bagArtSpots) {
+    const x = bagOffX + sp.c * bagCW;
+    const y = bagOffY + (sp.r + 1) * bagLH;
+    if (sp.orig === '#') {
+      ctx2.fillStyle = 'rgba(63,185,80,0.35)';
+      ctx2.fillText('#', x, y);
+    } else if (sp.orig !== ' ') {
+      ctx2.fillStyle = 'rgba(63,185,80,0.10)';
+      ctx2.fillText(sp.orig, x, y);
+    }
+  }
+
+  // ── Baby worms crawling inside the body mask ───────────────────────────────
+  if (!bagWorms) initBagWorms();
+  if (!bagWorms) { bagAnimHandle = requestAnimationFrame(drawBagArt); return; }
+
+  const BABY_FS = Math.max(11, fs * 3.0);
+  const SEG_GAP = BABY_FS * 0.68;
+  const BASE_AMP = bagCW * 2.2;   // larger base wiggle
+  const WCHARS  = ['~', '-', '~', '·', '~', '-'];
+
+  ctx2.font = `${BABY_FS}px IBM Plex Mono, monospace`;
+
+  for (const w of bagWorms) {
+    const newX = w.x + Math.cos(w.angle) * w.speed;
+    const newY = w.y + Math.sin(w.angle) * w.speed;
+
+    if (isInBagBody(newX, newY)) {
+      w.x = newX; w.y = newY;
+    } else {
+      w.angle += Math.PI * (0.6 + Math.random() * 0.8);
+      const tx = w.x + Math.cos(w.angle) * w.speed;
+      const ty = w.y + Math.sin(w.angle) * w.speed;
+      if (isInBagBody(tx, ty)) { w.x = tx; w.y = ty; }
+    }
+    w.phase += 0.11;
+
+    // Pre-compute segment positions head→tail; clip at first segment outside body
+    const WIGGLE_AMP = BASE_AMP * w.amp;
+    const segs = [];
+    for (let i = 0; i < w.length; i++) {
+      const sx = w.x - i * SEG_GAP * Math.cos(w.angle);
+      const sy = w.y - i * SEG_GAP * Math.sin(w.angle);
+      const wiggle = Math.sin(w.phase - i * w.freq) * WIGGLE_AMP;
+      const dx = sx - Math.sin(w.angle) * wiggle;
+      const dy = sy + Math.cos(w.angle) * wiggle;
+      if (i > 0 && !isInBagBody(dx, dy)) break;
+      segs.push({ dx, dy });
+    }
+
+    // Draw clipped tail→head so head is always on top
+    for (let i = segs.length - 1; i >= 0; i--) {
+      const { dx, dy } = segs[i];
+      const isHead = i === 0;
+      const bright = isHead ? 1.0 : 0.5 + 0.5 * (1 - i / w.length);
+      const g = Math.floor(120 + bright * 135);
+      ctx2.fillStyle = `rgb(${Math.floor(5 + bright * 40)},${g},${Math.floor(5 + bright * 25)})`;
+      if (isHead) { ctx2.shadowColor = '#3fb950'; ctx2.shadowBlur = 4; }
+      else ctx2.shadowBlur = 0;
+      ctx2.fillText(isHead ? '*' : WCHARS[i % WCHARS.length], dx, dy);
+    }
+    ctx2.shadowBlur = 0;
+  }
+
+  bagAnimHandle = requestAnimationFrame(drawBagArt);
+}
+
+function startBagArt() {
+  stopBagArt();
+  bagWorms = null;
+  const cv = document.getElementById('bag-canvas');
+  if (!cv) return;
+  cv.width  = cv.offsetWidth || 560;
+  cv.height = 300;
+  // Compute and store scaling params used by isInBagBody and drawBagArt
+  const charAspect = 0.615, lineRatio = 1.3;
+  const fs = Math.min(cv.width / (BAG_ART_COLS * charAspect), cv.height / (BAG_ART_ROWS * lineRatio));
+  bagCW   = fs * charAspect;
+  bagLH   = fs * lineRatio;
+  bagOffX = (cv.width  - BAG_ART_COLS * bagCW) / 2;
+  bagOffY = Math.max(0, (cv.height - BAG_ART_ROWS * bagLH) / 2);
+  drawBagArt();
+}
+
+function stopBagArt() {
+  if (bagAnimHandle !== null) { cancelAnimationFrame(bagAnimHandle); bagAnimHandle = null; }
+}
+
+// ── RESET GAME ────────────────────────────────────────────────────────────────
+
+function resetGame(isOffspring = false) {
+  stopBagArt();
+  const parentPathogens = isOffspring
+    ? [...state.parentPathogens, ...(state.pathogenPromptFired ? [0] : [])]
+    : [];
+  document.getElementById('death-card').style.display    = 'none';
+  document.getElementById('bag-card').style.display      = 'none';
+  document.getElementById('endpoint-card').style.display = 'none';
+  document.getElementById('modal-overlay').classList.remove('visible');
+  state = {
+    phase: 'intro',
+    hunger: 0,
+    hungerPromptFired: false,
+    nodeId: null,
+    history: [],
+    pendingNext: null,
+    pendingChoiceId: null,
+    proximityNodeId: null,
+    proximityArmed: false,
+    queuedNodeId: null,
+    movesRemaining: 0,
+    explorationMoves: 0,
+    savedQueue: null,
+    inPathogenZone: false,
+    inPredatorZone: false,
+    locomotionPromptFired: false,
+    visitedClusters: new Set(),
+    parentPathogens,
+    worm: { x: 150, y: 100, dir: 'right', tail: [] },
+    paused: false,
+    cutsceneActive: false,
+  };
+  render();
+  showCutscene(isOffspring
+    ? "A new generation begins.\nYou inherit your parent's world."
+    : 'You are a C. elegans worm.\nYou are hungry.\nUse arrow keys to explore.');
 }
 
 // ── LIGHTBOX ──────────────────────────────────────────────────────────────────
@@ -598,7 +1067,10 @@ document.addEventListener('keydown', e => {
   }
   if (state.paused) return;
   if (KEY_DIR[e.key]) { e.preventDefault(); moveWorm(KEY_DIR[e.key]); return; }
-  if (['1','2','3'].includes(e.key) && state.phase === 'prompt') {
+  // Dev shortcut: B = bag preview, X = death preview
+  if (e.key === 'b' || e.key === 'B') { showBag(); return; }
+  if (e.key === 'x' || e.key === 'X') { showDeath({ header: 'CONSUMED', narrative: 'Test death screen.' }); return; }
+  if (['1','2','3','4'].includes(e.key) && state.phase === 'prompt') {
     document.querySelectorAll('.choice-btn')[parseInt(e.key)-1]?.click(); return;
   }
   if ((e.key==='h'||e.key==='H') && state.phase==='prompt') {
@@ -611,8 +1083,12 @@ document.addEventListener('keydown', e => {
 });
 
 document.getElementById('continue-btn').addEventListener('click', continueGame);
-document.getElementById('papers-toggle').addEventListener('click', () =>
-  document.getElementById('papers-list').classList.toggle('visible'));
+document.getElementById('death-restart').addEventListener('click', () => resetGame(false));
+document.getElementById('bag-continue').addEventListener('click', () => resetGame(true));
+document.getElementById('papers-toggle').addEventListener('click', () => {
+  document.getElementById('papers-list').classList.toggle('visible');
+  document.getElementById('papers-science').classList.toggle('visible');
+});
 document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
 document.getElementById('lightbox').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeLightbox();

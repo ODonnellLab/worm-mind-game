@@ -138,6 +138,9 @@ body {
   border: 1px solid var(--border);
   border-radius: 8px;
   width: min(340px, 46%);
+  max-height: min(85vh, calc(100% - 1rem));
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   font-family: var(--sans);
   position: relative;
@@ -157,6 +160,9 @@ body {
 
 .modal-body {
   padding: 0.75rem 0.75rem 0.5rem;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .modal-narrative {
@@ -185,6 +191,7 @@ body {
   background: rgba(88, 166, 255, 0.08);
   outline: none;
 }
+.choice-btn:disabled { cursor: default; pointer-events: none; }
 .choice-key {
   font-family: var(--mono);
   font-size: 10px;
@@ -208,13 +215,12 @@ body {
 }
 .choice-explanation.visible { display: block; }
 
-.modal-footer {
-  padding: 0.5rem 0.75rem;
+.modal-actions {
+  padding: 0.5rem 0 0.25rem;
+  margin-top: 0.5rem;
   border-top: 1px solid var(--border);
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
+  justify-content: flex-end;
 }
 
 .footer-btn {
@@ -258,6 +264,18 @@ body {
   border-radius: 4px;
 }
 .papers-list.visible { display: flex; }
+.papers-science {
+  display: none;
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.65;
+  padding: 6px 0.75rem 4px;
+  background: var(--surface2);
+  border-radius: 4px 4px 0 0;
+  margin-top: 0.5rem;
+}
+.papers-science.visible { display: block; }
+.papers-science + .papers-list { margin-top: 0; border-radius: 0 0 4px 4px; }
 .papers-list a {
   font-size: 12px;
   color: var(--accent);
@@ -273,7 +291,16 @@ body {
   z-index: 1;
   border-radius: 10px;
   width: min(620px, 92%);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
+}
+.endpoint-body {
+  padding: 1.5rem 1.25rem;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 }
 .endpoint-header {
   padding: 0.6rem 1rem;
@@ -285,7 +312,6 @@ body {
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
-.endpoint-body { padding: 1.5rem 1.25rem; }
 .endpoint-narrative {
   font-size: 15px;
   line-height: 1.8;
@@ -306,6 +332,137 @@ body {
   transition: opacity 0.15s;
 }
 .endpoint-cta:hover { opacity: 0.85; }
+
+/* ── DEATH CARD ── */
+.death-card {
+  background: rgba(22, 27, 34, 0.97);
+  border: 1px solid #f85149;
+  position: relative;
+  z-index: 1;
+  border-radius: 10px;
+  width: min(620px, 92%);
+  max-height: min(85vh, calc(100% - 1rem));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.death-header {
+  padding: 0.6rem 1rem;
+  background: rgba(248, 81, 73, 0.12);
+  border-bottom: 1px solid #f85149;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: #f85149;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.death-body {
+  padding: 1.5rem 1.25rem;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+.death-narrative {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--text);
+  white-space: pre-line;
+  margin-bottom: 1.5rem;
+}
+.death-restart {
+  background: #f85149;
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0.6rem 1.25rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.death-restart:hover { opacity: 0.85; }
+
+/* ── BAG CARD ── */
+.bag-card {
+  background: rgba(13, 17, 23, 0.97);
+  border: 1px solid var(--accent2);
+  position: relative;
+  z-index: 1;
+  border-radius: 10px;
+  width: min(620px, 92%);
+  max-height: min(85vh, calc(100% - 1rem));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.bag-header {
+  padding: 0.6rem 1rem;
+  background: rgba(63, 185, 80, 0.08);
+  border-bottom: 1px solid var(--accent2);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--accent2);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.bag-canvas {
+  display: block;
+  width: 100%;
+  height: 300px;
+  background: #0d1117;
+  flex-shrink: 0;
+}
+.bag-body {
+  padding: 1.25rem 1.25rem;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  border-top: 1px solid rgba(63, 185, 80, 0.2);
+}
+.bag-narrative {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--text);
+  white-space: pre-line;
+  margin-bottom: 1.25rem;
+}
+.bag-science-row {
+  margin: 0.5rem 0 0.25rem;
+}
+.bag-science-panel {
+  display: none;
+  font-size: 11px;
+  line-height: 1.65;
+  color: var(--text-muted);
+  background: var(--surface2);
+  border-radius: 4px;
+  padding: 0.6rem 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.bag-science-panel.visible { display: block; }
+.bag-science-panel p { margin-bottom: 0.5rem; }
+.bag-science-panel a {
+  display: block;
+  font-size: 11px;
+  color: var(--accent);
+  text-decoration: none;
+  margin-top: 0.25rem;
+}
+.bag-science-panel a:hover { text-decoration: underline; }
+.bag-continue {
+  background: var(--accent2);
+  color: #000;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0.6rem 1.25rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.bag-continue:hover { opacity: 0.85; }
 
 /* ── LIGHTBOX ── */
 .lightbox-overlay {
