@@ -669,8 +669,7 @@ function getNode(id) { return nodes.nodes[id] || null; }
 function setModalBgImage(filename, position) {
   const img = document.getElementById('modal-bg-image');
   const vid = document.getElementById('modal-bg-video');
-  vid.classList.remove('visible');
-  vid.pause();
+  if (vid) { vid.classList.remove('visible'); vid.pause(); }
   if (filename) {
     img.src = `images/${filename}`;
     img.style.objectPosition = position || 'center';
@@ -684,6 +683,7 @@ function setModalBgImage(filename, position) {
 function setModalBgVideo(filename) {
   const img = document.getElementById('modal-bg-image');
   const vid = document.getElementById('modal-bg-video');
+  if (!vid) return;
   img.classList.remove('visible');
   if (filename) {
     vid.src = `images/${filename}`;
@@ -1285,25 +1285,17 @@ const REFS_URL = 'https://odonnell-lab-website.pages.dev/data/references.json';
 
 async function init() {
   try {
-    const [nodesResp, refsResp] = await Promise.allSettled([
-      fetch('data/nodes.json'),
-      fetch(REFS_URL),
-    ]);
-    if (nodesResp.status === 'fulfilled') {
-      nodes = await nodesResp.value.json();
-    } else {
-      console.error('Could not load nodes.json', nodesResp.reason);
-      return;
-    }
-    if (refsResp.status === 'fulfilled') {
-      REFS = await refsResp.value.json();
-    } else {
-      console.warn('Could not load references.json — [H] papers will not display', refsResp.reason);
-    }
+    const resp = await fetch('data/nodes.json');
+    nodes = await resp.json();
   } catch(e) {
-    console.error('Init error', e);
+    console.error('Could not load nodes.json', e);
     return;
   }
+  // Refs load in background — game starts immediately; papers appear once loaded
+  fetch(REFS_URL)
+    .then(r => r.json())
+    .then(data => { REFS = data; })
+    .catch(e => console.warn('Could not load references.json — [H] papers will not display', e));
   render();
   showCutscene('You are a C. elegans worm.\nYou are hungry.\nUse arrow keys to explore.');
 }
