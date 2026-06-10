@@ -214,6 +214,13 @@ let state = {
   worm: { x: 150, y: 100, dir: 'right', tail: [] },
   paused: false,
   cutsceneActive: false,
+  pharynxSeen: false,
+  eatUnlocked: false,
+  pharynxPendingNodeId: null,
+  pathogenEaten: 0,
+  inFoodZone: false,
+  nearFoodType: null,
+  lastEatTime: 0,
 };
 
 let nodes = null;
@@ -412,6 +419,8 @@ function drawStatusBar() {
     hint = 'Return to the bacteria...';
   } else if (state.queuedNodeId) {
     hint = `Keep moving... (${state.movesRemaining})`;
+  } else if (state.eatUnlocked && state.inFoodZone) {
+    hint = state.nearFoodType === 'pathogen' ? '[E] eat  ⚠ dangerous' : '[E] to eat';
   } else {
     for (const [t, h] of hints) { if (state.hunger >= t) hint = h; }
   }
@@ -524,13 +533,44 @@ function moveWorm(dir) {
   }
 
   const nowInPathogen = minDistTo(nx, ny, PATHOGEN_CLUSTERS) < 4;
+  const nowNearGood   = minDistToCluster(nx, ny) < 4;
+  const nowInPredator = minDistTo(nx, ny, PREDATORS) < 5;
+
+  // Track food proximity for eat key and status bar
+  state.inFoodZone   = nowNearGood || nowInPathogen;
+  state.nearFoodType = nowNearGood ? 'good' : nowInPathogen ? 'pathogen' : null;
+
+  // Pharynx gate — fires ONCE on first food contact of any kind
+  if (!state.pharynxSeen && state.inFoodZone) {
+    state.pharynxSeen = true;
+    if (nowNearGood && !state.proximityNodeId && !state.queuedNodeId) {
+      state.hunger = 0;
+      state.pharynxPendingNodeId = 'detect';
+    } else if (nowInPathogen) {
+      if (state.proximityNodeId) {
+        state.savedQueue = { proximityNodeId: state.proximityNodeId };
+        state.proximityNodeId = null;
+      } else if (state.queuedNodeId) {
+        state.savedQueue = { nodeId: state.queuedNodeId, movesRemaining: state.movesRemaining };
+        state.queuedNodeId = null; state.movesRemaining = 0;
+      }
+      state.inPathogenZone = true;
+      state.pharynxPendingNodeId = 'pathogen-encounter';
+    } else {
+      state.pharynxPendingNodeId = null;
+    }
+    state.phase = 'prompt';
+    render();
+    setTimeout(() => showNode('pharynx-intro'), 400);
+    return;
+  }
+
   if (!state.inPathogenZone && nowInPathogen) {
     state.inPathogenZone = true;
     fireSidebar('pathogen-encounter'); return;
   }
   state.inPathogenZone = nowInPathogen;
 
-  const nowInPredator = minDistTo(nx, ny, PREDATORS) < 5;
   if (!state.inPredatorZone && nowInPredator) {
     state.inPredatorZone = true;
     fireSidebar('predator-encounter'); return;
@@ -567,12 +607,12 @@ function moveWorm(dir) {
 
 // ── CUTSCENE ──────────────────────────────────────────────────────────────────
 
-function showCutscene(text) {
+function showCutscene(text, duration = 2600) {
   const el = document.getElementById('cutscene-text');
   el.textContent = text;
   el.classList.add('visible');
   state.cutsceneActive = true;
-  setTimeout(() => { el.classList.remove('visible'); state.cutsceneActive = false; }, 2600);
+  setTimeout(() => { el.classList.remove('visible'); state.cutsceneActive = false; }, duration);
 }
 
 // ── NODE SYSTEM ───────────────────────────────────────────────────────────────
@@ -681,6 +721,20 @@ function continueGame() {
     state.pendingChoiceId = null;
   }
   state.pendingNext = null;
+
+  // Pharynx-intro completion: unlock eating and immediately fire pending node
+  if (state.nodeId === 'pharynx-intro') {
+    state.eatUnlocked = true;
+    const pending = state.pharynxPendingNodeId;
+    state.pharynxPendingNodeId = null;
+    if (pending) {
+      showNode(pending);
+    } else {
+      state.phase = 'exploration';
+      render();
+    }
+    return;
+  }
 
   // Loop-back: show same node immediately (e.g. wrong-answer choices)
   if (nextId === state.nodeId) {
@@ -997,6 +1051,42 @@ function stopBagArt() {
   if (bagAnimHandle !== null) { cancelAnimationFrame(bagAnimHandle); bagAnimHandle = null; }
 }
 
+// ── EAT MECHANIC ──────────────────────────────────────────────────────────────
+
+function doEat() {
+  if (!state.eatUnlocked || state.phase !== 'exploration') return;
+  const now = Date.now();
+  if (now - state.lastEatTime < 900) return;
+  state.lastEatTime = now;
+
+  const wx = state.worm.x, wy = state.worm.y;
+  const nearGood = minDistToCluster(wx, wy) < 5;
+  const nearPath = minDistTo(wx, wy, PATHOGEN_CLUSTERS) < 5;
+
+  if (!nearGood && !nearPath) { showCutscene('No food nearby.', 800); return; }
+
+  if (nearGood) {
+    state.hunger = Math.max(0, state.hunger - 15);
+    showCutscene('Feeding.', 800);
+  } else {
+    state.pathogenEaten++;
+    state.hunger = Math.max(0, state.hunger - 5);
+    if (state.pathogenEaten >= 4) {
+      showDeath(getNode('death-pathogen') || {
+        header: 'POISONED',
+        narrative: 'The toxins accumulated past the point of recovery.',
+      });
+      return;
+    }
+    showCutscene(
+      state.pathogenEaten === 1 ? 'You eat despite the warning.\nSomething is wrong.'
+        : 'You eat again.\nToxins are accumulating.',
+      1600
+    );
+  }
+  render();
+}
+
 // ── RESET GAME ────────────────────────────────────────────────────────────────
 
 function resetGame(isOffspring = false) {
@@ -1030,6 +1120,13 @@ function resetGame(isOffspring = false) {
     worm: { x: 150, y: 100, dir: 'right', tail: [] },
     paused: false,
     cutsceneActive: false,
+    pharynxSeen: false,
+    eatUnlocked: false,
+    pharynxPendingNodeId: null,
+    pathogenEaten: 0,
+    inFoodZone: false,
+    nearFoodType: null,
+    lastEatTime: 0,
   };
   render();
   showCutscene(isOffspring
@@ -1067,6 +1164,7 @@ document.addEventListener('keydown', e => {
   }
   if (state.paused) return;
   if (KEY_DIR[e.key]) { e.preventDefault(); moveWorm(KEY_DIR[e.key]); return; }
+  if (e.key === 'e' || e.key === 'E') { doEat(); return; }
   // Dev shortcut: B = bag preview, X = death preview
   if (e.key === 'b' || e.key === 'B') { showBag(); return; }
   if (e.key === 'x' || e.key === 'X') { showDeath({ header: 'CONSUMED', narrative: 'Test death screen.' }); return; }

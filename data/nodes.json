@@ -148,6 +148,37 @@
       ],
       "science": "Nematophagous fungi use multiple strategies. Some produce repellent volatiles. Others, like Arthrobotrys oligospora, mimic C. elegans sex pheromones and food odorants to lure prey. The touch circuit (via mechanosensory neurons) can trigger escape after contact with hyphae."
     },
+    "pharynx-intro": {
+      "id": "pharynx-intro",
+      "phase": "EATING · PHARYNGEAL PUMPING",
+      "image": "Feeding_gcamp.gif",
+      "narrative": "You're near food. Look at this recording — each flash of green is a calcium signal in a pharyngeal neuron firing as the pharynx pumps. The pharynx is a muscular tube just behind your mouth. It draws bacteria in, grinds them between its ridged walls, and pushes them into your intestine. This is how you eat.",
+      "choices": [
+        {
+          "id": "pump",
+          "label": "My pharynx pumps bacteria in and grinds them",
+          "sublabel": "I can see the pump contracting in the recording",
+          "explanation": "Exactly. The pm5 muscle (grinder) crushes bacteria with each cycle. The MC neuron times each pump; NSM serotonergic neurons encode food presence and accelerate the rate. You can now eat — press [E] while near food."
+        },
+        {
+          "id": "absorb",
+          "label": "I absorb nutrients through my intestinal wall directly",
+          "sublabel": "passive diffusion through the epithelium",
+          "explanation": "The intestine does absorb nutrients — but the pharynx has to process bacteria first. No pumping means no food intake, even surrounded by bacteria. Every green flash in this recording is one pump cycle. You can now eat — press [E] while near food."
+        }
+      ],
+      "papers": [
+        {
+          "label": "Avery & Horvitz, Neuron 1989",
+          "url": "https://doi.org/10.1016/0896-6273(89)90092-2"
+        },
+        {
+          "label": "Avery & Shtonda, J Exp Biol 2003",
+          "url": "https://doi.org/10.1242/jeb.00375"
+        }
+      ],
+      "science": "The pharynx is a self-contained neuromuscular system of 20 neurons. The MC neuron times each pump cycle; M3 regulates relaxation between cycles; NSM encodes food presence via serotonin and accelerates pumping rate. The pm5 grinder muscle crushes bacteria against cuticular ridges, lysing most cells before they reach the intestine."
+    },
     "detect": {
       "id": "detect",
       "phase": "FINDING FOOD",
@@ -721,6 +752,12 @@
       "type": "death",
       "header": "CONSUMED",
       "narrative": "Arthrobotrys oligospora triggered its constricting ring. You couldn't distinguish predator from food — and there was no time to escape once the ring closed.\n\nThis is real: naive C. elegans cannot detect mimicking fungi until it's too late."
+    },
+    "death-pathogen": {
+      "id": "death-pathogen",
+      "type": "death",
+      "header": "POISONED",
+      "narrative": "The toxins accumulated past the point of recovery. You ate the harmful bacteria too many times.\n\nC. elegans can survive brief pathogen contact — but colonization and repeated ingestion overwhelm the immune response."
     }
   }
 }
