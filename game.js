@@ -875,32 +875,15 @@ function buildPathSummary() {
     const node = getNode(nodeId);
     if (!node) continue;
     const choice = node.choices?.find(c => c.id === choiceId);
-    if (!choice || choice.next === nodeId) continue;
-
-    const phaseParts = (node.phase || '').split(' · ');
-    const topic = phaseParts[phaseParts.length - 1];
-    const topicStr = topic.charAt(0).toUpperCase() + topic.slice(1).toLowerCase();
-
-    const action = choice.label
-      .replace(/^I /, 'you ')
-      .replace(/I've/g, "you've")
-      .replace(/I'm/g, "you're")
-      .replace(/ — I /g, ' — you ');
-
-    const firstSentence = choice.explanation
-      ? (choice.explanation.match(/^[^.!?]+[.!?]/)?.[0] ?? '')
-      : '';
-
-    parts.push(firstSentence
-      ? `${topicStr}: ${action}. ${firstSentence}`
-      : `${topicStr}: ${action}.`);
+    if (!choice || !choice.summary || choice.next === nodeId) continue;
+    parts.push(choice.summary);
   }
-  return parts.length ? parts.join('\n\n') + '\n\n' : '';
+  return parts.join(' ');
 }
 
 function showEndpoint(node) {
   const summary = buildPathSummary();
-  document.getElementById('endpoint-narrative').textContent = summary + node.narrative;
+  document.getElementById('endpoint-narrative').textContent = (summary ? summary + '\n\n' : '') + node.narrative;
   document.getElementById('endpoint-cta').textContent = `→ ${node.cta}`;
   document.getElementById('endpoint-cta').href = JOIN_URL;
   setModalBgImage(node.image || null);
@@ -914,7 +897,9 @@ function showEndpoint(node) {
 
 function showDeath(node) {
   stopBagArt();
-  document.getElementById('death-narrative').textContent = node.narrative || '';
+  const summary = buildPathSummary();
+  const deathText = (summary ? summary + '\n\n' : '') + (node.narrative || '');
+  document.getElementById('death-narrative').textContent = deathText;
   document.getElementById('death-header').textContent    = node.header    || 'YOU DIED';
   document.getElementById('modal-card').style.display    = 'none';
   document.getElementById('endpoint-card').style.display = 'none';
@@ -934,8 +919,7 @@ const BAG_PAPERS = [
 ];
 
 function showBag() {
-  const summary = buildPathSummary();
-  const text = summary +
+  const text =
     "You have run out of energy.\n\n" +
     "You begin laying eggs — but there's no food left. Your eggs hatch inside you. " +
     "The larvae eat your intestine first, then work outward. Your body becomes their first meal. " +

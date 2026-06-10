@@ -369,6 +369,12 @@ body {
   white-space: pre-line;
   margin-bottom: 1.5rem;
 }
+.death-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
 .death-restart {
   background: #f85149;
   color: #fff;
@@ -382,6 +388,19 @@ body {
   transition: opacity 0.15s;
 }
 .death-restart:hover { opacity: 0.85; }
+.death-learn-more {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent2);
+  text-decoration: none;
+  padding: 0.6rem 1.25rem;
+  border: 1px solid var(--accent2);
+  border-radius: 4px;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+.death-learn-more:hover { opacity: 0.75; }
 
 /* ── BAG CARD ── */
 .bag-card {

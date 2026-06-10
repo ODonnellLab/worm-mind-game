@@ -8,16 +8,19 @@
       {
         "id": "hunger-stomach",
         "label": "My stomach feels empty — a physical sensation",
+        "summary": "You found that hunger involves more than stretch receptors — it is a whole-body chemical state that cannot be explained by a single sensation.",
         "explanation": "Close — but it's more than that. Physical stretch receptors in your gut do contribute, but hunger is a whole-body state that involves chemical signals too. Stretch alone doesn't explain why you're hungrier after a long time even with water in your stomach."
       },
       {
         "id": "hunger-chemical",
         "label": "Chemical signals traveling through my body fluid",
+        "summary": "You discovered that hunger is signalled by molecules traveling through body fluid — there are no dedicated hunger nerves, just chemistry.",
         "explanation": "Yes — and this is core to how C. elegans works. There are no dedicated hunger nerves. Instead, molecules produced by the gut and other tissues travel through the body and change how neurons respond. Your entire behavioral state can be reset by a single molecule."
       },
       {
         "id": "hunger-brain",
         "label": "My brain is counting how long since I last ate",
+        "summary": "You learned that hunger integrates time, energy stores, and gut chemical signals — and that the molecules involved are conserved in humans.",
         "explanation": "Partly — but clocks alone aren't enough. The nervous system integrates time, energy stores, and chemical signals from the gut. What's remarkable is that much of this signaling is conserved: the molecules C. elegans uses overlap with ones that regulate hunger in humans."
       }
     ],
@@ -42,16 +45,19 @@
         {
           "id": "muscles",
           "label": "My muscles just contract differently",
+          "summary": "You moved by coordinating dorsal and ventral muscle contractions — but learned those muscles take orders from command interneurons upstream.",
           "explanation": "True — but the muscles are following orders from motor neurons. The pattern of dorsal and ventral muscle activation creates the wave. Which direction that wave travels depends on command interneurons upstream of the motor neurons."
         },
         {
           "id": "command-neurons",
           "label": "Command interneurons — different sets drive forward vs reverse",
+          "summary": "You moved using AVB and AVA command interneurons — AVB drives forward, AVA drives reverse, and neuromodulators shift the balance between them.",
           "explanation": "Exactly. AVB interneurons drive forward movement; AVA drives reverse. They compete to control the same motor neurons in the ventral nerve cord. Neuromodulators — dopamine, serotonin, octopamine — shift the balance between them based on context: is there food nearby? Is the gut colonized?"
         },
         {
           "id": "touch",
           "label": "A touch signal told me to reverse",
+          "summary": "You reversed in response to touch — but discovered that most reversals are generated spontaneously by the nervous system, without any external contact.",
           "explanation": "Sometimes — mechanosensory neurons directly trigger reversals on contact. But most reversals happen without any touch: the nervous system generates them spontaneously as a searching strategy when food is absent. It's a built-in exploratory program."
         }
       ],
@@ -75,16 +81,19 @@
         {
           "id": "avoid",
           "label": "Reverse and get away",
+          "summary": "You reversed from harmful bacteria, driven by ASH nociceptive neurons detecting repellent chemicals and triggering avoidance via AVA command interneurons.",
           "explanation": "The right reflex. ASH nociceptive neurons detect repellent chemicals and drive rapid reversals via AVA command interneurons. This avoidance response is faster than approach — but it can be suppressed when hunger is high enough."
         },
         {
           "id": "assess",
           "label": "Get closer to investigate",
+          "summary": "You moved closer to investigate — hunger had suppressed your avoidance reflex, a trade-off between starvation risk and pathogen exposure.",
           "explanation": "A hungry worm suppresses avoidance. Whether eating potentially harmful bacteria is adaptive (some 'bad-smelling' bacteria are actually nutritious) or maladaptive is an active area of research — studied by screening the behavioral responses to diverse natural bacterial strains."
         },
         {
           "id": "eat",
           "label": "Eat them anyway — I'm hungry enough",
+          "summary": "You ate the harmful bacteria despite the sensory warning — a decision shaped by hunger overriding avoidance, with consequences that only emerge after gut colonization.",
           "explanation": "Some pathogens are only dangerous in large doses or require gut colonization to cause harm. C. elegans can ingest mildly pathogenic bacteria and survive. But others kill via toxins or immune activation. The sensory system evolved to make this distinction — imperfectly."
         }
       ],
@@ -108,22 +117,26 @@
         {
           "id": "smell-predator",
           "label": "I can smell fungal chemicals from a distance",
+          "summary": "You learned that some nematophagous fungi produce repellent volatiles — but others mimic food and sex pheromones, turning your own olfactory system against you.",
           "explanation": "It's complicated. Some nematophagous fungi produce repellents that experienced worms can avoid. But Arthrobotrys oligospora mimics C. elegans sex pheromones and food odorants — so the 'smell' may signal attraction, not danger. The very system meant to protect you can be hijacked."
         },
         {
           "id": "feel-predator",
           "label": "I feel the physical structure on contact",
+          "summary": "You found that touch neurons can trigger escape responses after contact with fungal hyphae — but constricting rings close in under 100ms, making touch a last resort.",
           "explanation": "Touch neurons can trigger rapid escape responses after contact with fungal hyphae — and this sometimes works. But constricting rings close in under 100ms, and not all worms escape in time. Touch is a last resort, not an early warning."
         },
         {
           "id": "invisible",
           "label": "I can't detect it — this is invisible danger",
+          "summary": "You concluded that pheromone-mimicking predators are effectively invisible to naive worms — the signal is not absent but disguised as something attractive.",
           "explanation": "For mimicking fungi, effectively yes. The signal isn't absent — it's disguised as something attractive. Naïve worms have no defense against fungal sex/food pheromone mimicry. Whether a worm can distinguish predator from food depends on prior experience and genetic background."
         },
         {
           "id": "ignore",
           "label": "Ignore it — it doesn't look dangerous",
           "sublabel": "it might even smell like food",
+          "summary": "You ignored what turned out to be a predator — the fungal hyphae were indistinguishable from a food signal until the constricting ring had already closed.",
           "explanation": "The hyphae were indistinguishable from a food signal. You moved closer. The ring closed in under 100 milliseconds — faster than any escape response.",
           "next": "death-predator"
         }
@@ -158,12 +171,14 @@
           "id": "pump",
           "label": "My pharynx pumps bacteria in and grinds them",
           "sublabel": "I can see the pump contracting in the recording",
+          "summary": "You learned to eat using your pharynx — a muscular pump whose MC neuron times each cycle and whose pm5 grinder muscle crushes bacteria before they reach the intestine.",
           "explanation": "Exactly. The pm5 muscle (grinder) crushes bacteria with each cycle. The MC neuron times each pump; NSM serotonergic neurons encode food presence and accelerate the rate. You can now eat — press [E] while near food."
         },
         {
           "id": "absorb",
           "label": "I absorb nutrients through my intestinal wall directly",
           "sublabel": "passive diffusion through the epithelium",
+          "summary": "You learned that pharyngeal pumping is required to eat — the intestine absorbs nutrients, but the pharynx must process bacteria first before any absorption can occur.",
           "explanation": "The intestine does absorb nutrients — but the pharynx has to process bacteria first. No pumping means no food intake, even surrounded by bacteria. Every green flash in this recording is one pump cycle. You can now eat — press [E] while near food."
         }
       ],
@@ -189,6 +204,7 @@
           "id": "smell",
           "label": "I smelled them",
           "sublabel": "chemicals drifting through the air guided me here",
+          "summary": "You found food by following volatile chemicals through the air, detected by your AWC and AWA olfactory neurons using cGMP signaling.",
           "science": "Smell: AWC and AWA neurons detect volatile odorants. AWC mediates attraction to isoamyl alcohol, butanone, and other volatile odorants; AWA neurons detect additional volatile compounds including diacetyl and pyrazine. AWC neurons use a cGMP signaling pathway via the TAX-4/TAX-2 cyclic nucleotide-gated channel. Different odorants are detected by somewhat non-overlapping sets of neurons but the olfactory identity may be encoded by the combinations of neurons activated by an odor.",
           "papers": [
             {
@@ -206,6 +222,7 @@
           "id": "taste",
           "label": "I tasted the surface",
           "sublabel": "I sampled the substrate as I crawled",
+          "summary": "You found food by tasting dissolved ions on the soil surface, using your bilaterally asymmetric ASE neurons — ASEL and ASER detecting different chemical signatures.",
           "science": "Taste: ASE, ASG, and ASH neurons detect dissolved ions and chemicals on contact. ASE left/right neurons are bilaterally asymmetric: ASEL detects Na⁺, Cl⁻, and cAMP; ASER detects K⁺, Cl⁻, and other ions. ASG and ASH also detect water-soluble chemicals on contact. ASH responds to noxious soluble compounds and drives avoidance. These neurons use cGMP and other second messengers to transduce chemical signals.",
           "papers": [
             {
@@ -223,6 +240,7 @@
           "id": "touch",
           "label": "I bumped into them",
           "sublabel": "I felt something and investigated",
+          "summary": "You found food by physical contact, detected by your ALM and AVM mechanosensory neurons using the MEC-4/MEC-2 ion channel complex.",
           "science": "Touch: mechanosensory neurons including ALM, AVM, PLM, and PVM respond to physical contact. ALM and AVM neurons mediate anterior body touch; PLM and PVM mediate posterior touch. These neurons use the degenerin/ENaC channel complex MEC-4/MEC-2 for mechanotransduction. They synapse onto command interneurons (AVD, PVC) that control forward and reverse locomotion. Gentle touch is distinct from the harsh/noxious touch detected by PVD and FLP neurons.",
           "papers": [
             {
@@ -281,6 +299,7 @@
           "id": "familiar-positive",
           "label": "The familiar one — I've eaten it safely before",
           "sublabel": "I learned to prefer it",
+          "summary": "You approached familiar food, drawn by positive olfactory memory — your AWC neurons had undergone synaptic plasticity from prior food-odor pairing.",
           "explanation": "Pairing a food odor with a meal creates a lasting preference for that odor. AWC neurons adjust their response properties based on prior positive experience, increasing attraction to the food-associated smell. This is positive olfactory associative conditioning — the worm's nervous system stores a record of what was good to eat.",
           "science": "AWC^ON neurons undergo synaptic plasticity following food-odor pairing, increasing their calcium response to the conditioned odorant. This requires insulin/IGF-1 signaling (IIS) and is modulated by aging. Familiar food also triggers enhanced pharyngeal pumping via an endocrine serotonin signal from NSM neurons — familiarity drives both approach behavior and faster feeding.",
           "next": "smell-goodbad",
@@ -303,6 +322,7 @@
           "id": "familiar-negative",
           "label": "Away from the familiar one — it made me sick",
           "sublabel": "I learned to avoid it",
+          "summary": "You avoided a familiar food that had made you sick — your nervous system had formed an aversive olfactory memory, mediated by serotonin from ADF neurons.",
           "explanation": "C. elegans also forms aversive olfactory memories. After a pathogenic experience, worms avoid the smell of that species even when healthy — a lasting behavioral change driven by serotonergic interneurons downstream of AWC. Learned avoidance can persist for hours and be transmitted transgenerationally.",
           "science": "Aversive olfactory conditioning requires serotonin from ADF chemosensory neurons and recruits AIY, AIB, and RIA interneurons downstream of AWC. The learned avoidance persists for hours after a single pathogenic encounter. Some forms can be transmitted to offspring via Piwi/PRG-1 and small RNA mechanisms, allowing transgenerational inheritance of pathogen avoidance.",
           "next": "smell-goodbad",
@@ -321,6 +341,7 @@
           "id": "novel",
           "label": "The new one — it might be better",
           "sublabel": "explore rather than exploit",
+          "summary": "You chose to explore a novel food source, navigating the explore/exploit tradeoff mediated by dopamine from mechanosensory neurons and serotonin from NSM.",
           "explanation": "When conditions change or past experience is uncertain, exploration makes sense. C. elegans varies the balance between exploiting known food and exploring new sources depending on starvation state, population density, and prior experience. The explore/exploit tradeoff is a fundamental principle of foraging that operates in every animal nervous system.",
           "science": "Dopamine from CEP/ADE mechanosensory neurons encodes food presence and suppresses area-restricted search (pirouettes). Serotonin from NSM encodes recent feeding history and drives local exploitation. The balance between these neuromodulatory systems sets the explore/exploit tradeoff — hungry worms pirouette frequently to search locally, then switch to long-range runs when they fail to find food.",
           "next": "smell-goodbad",
@@ -361,18 +382,21 @@
         {
           "id": "yes",
           "label": "Yes — a good smell means good bacteria",
+          "summary": "You assumed smell reliably signals food quality — and found that while mostly true, bacteria can produce the same attractive volatiles regardless of whether they are harmful.",
           "explanation": "Mostly — but not always. Smell can predict food quality, but bacteria can produce the same attractive volatiles regardless of whether they're beneficial or harmful. The signal is imperfect.",
           "next": "smell-eat"
         },
         {
           "id": "mostly",
           "label": "Mostly — but smell isn't a perfect signal",
+          "summary": "You recognized that olfactory signals are a useful but imperfect proxy for food quality — bacteria can exploit the very volatiles your chemosensory neurons are tuned to detect.",
           "explanation": "Exactly right. Chemosensory neurons are tuned to detect bacterial volatiles as proxies for food quality, but bacteria can exploit those signals. The reliability of smell depends on the evolutionary history between worm and bacterium.",
           "next": "smell-eat"
         },
         {
           "id": "no",
           "label": "No — you can't really tell until you've eaten them",
+          "summary": "You concluded that volatile signals cannot reliably distinguish food quality — the real assessment happens after eating, when bacteria enter the gut.",
           "explanation": "For some bacteria, this is true. The distinction between nutritious, neutral, and harmful bacteria isn't always detectable at a distance. This is why the gut colonization step matters so much — the real quality assessment happens after eating.",
           "next": "smell-eat"
         }
@@ -406,12 +430,14 @@
         {
           "id": "coincidence",
           "label": "That must be a coincidence",
+          "summary": "You wondered whether bacteria producing the same neurotransmitters as your neurons was chemical coincidence — and found the convergence too striking to dismiss.",
           "explanation": "It might be — but the convergence is striking. Bacteria, plants, and animals all produce monoamine neurotransmitters independently. One hypothesis: these chemicals evolved first as metabolic byproducts or signaling molecules between single-celled organisms — long before nervous systems existed.",
           "next": "smell-change"
         },
         {
           "id": "evolved",
           "label": "Maybe bacteria evolved to use our signaling language",
+          "summary": "You considered that bacteria may have evolved to produce neurotransmitters specifically to manipulate host nervous systems — a question the lab is actively investigating.",
           "explanation": "Possibly. Bacteria that produce neurotransmitters may benefit if those chemicals manipulate host behavior. Whether this is convergent chemistry or active manipulation is an open question — and one the lab is investigating.",
           "next": "smell-change"
         }
@@ -437,18 +463,21 @@
         {
           "id": "smell-neurons",
           "label": "The neurotransmitter retuned my smell neurons",
+          "summary": "You discovered that gut bacteria released octopamine, which acted on your AWC chemosensory neurons via SER-3 receptors to make that bacterium's own odor more appealing.",
           "explanation": "Yes — and this is the key finding. Octopamine from the gut acts directly on chemosensory neurons to change how they respond to specific odorants. The same bacterium smells better after it has colonized you.",
           "next": "smell-endpoint"
         },
         {
           "id": "hunger",
           "label": "The neurotransmitter changed how hungry I feel",
+          "summary": "You found that gut-derived octopamine changed your feeding drive — and that individual sensory neurons also changed their odor tuning in response, a more targeted effect.",
           "explanation": "Also true — octopamine affects feeding drive more broadly. But the specific finding in this lab is that individual sensory neurons change their odor tuning in response to gut signals, creating a more targeted effect.",
           "next": "smell-endpoint"
         },
         {
           "id": "movement",
           "label": "The neurotransmitter changed how I move",
+          "summary": "You realized your sensory experience itself was modified by gut bacteria — the signal changed what you smelled before it changed how you responded.",
           "explanation": "Yes — this is one downstream effect. But the more surprising finding is upstream: the signal changes what you smell, before it changes how you respond. Your sensory experience itself is modified.",
           "next": "smell-endpoint"
         }
@@ -482,12 +511,14 @@
         {
           "id": "forward",
           "label": "I moved forward steadily to cover ground",
+          "summary": "You searched by running forward — sustained locomotion that covers ground efficiently, driven by AVB command interneurons with longer runs when food is present.",
           "explanation": "This is a run — sustained forward movement that covers area efficiently. Worms alternate between runs and reversals depending on whether they're finding food or not. On a plate with food, runs get longer.",
           "next": "taste-goodbad"
         },
         {
           "id": "reverse",
           "label": "I reversed and turned frequently to sample new areas",
+          "summary": "You searched by pirouetting — frequent reversals and turns to sample a local area, a strategy driven by AVA command interneurons and upregulated when food is absent.",
           "explanation": "This is a pirouette — frequent reversals and turns that keep you sampling a local area. On an empty plate, worms pirouette more, as if searching. Both strategies are encoded in the balance between forward and reverse motor neuron activity.",
           "next": "taste-goodbad"
         }
@@ -509,18 +540,21 @@
         {
           "id": "reliable",
           "label": "Taste is a reliable signal for food quality",
+          "summary": "You found taste to be a reasonably reliable first-pass quality signal — but learned that the full assessment only emerges after bacteria enter the gut.",
           "explanation": "For most natural bacteria encountered in the worm's environment, this is reasonably true — taste neurons evolved to detect signals that correlate with food quality. But the signal can be fooled.",
           "next": "taste-hunger"
         },
         {
           "id": "partial",
           "label": "Taste tells you something, but not everything",
+          "summary": "You recognized that taste neurons provide a first-pass assessment of food quality, but that gut colonization delivers the final verdict.",
           "explanation": "Exactly right. Taste neurons provide a first-pass assessment, but quality assessment continues in the gut. The full picture only emerges after eating — which is part of why gut colonization has such a strong effect on subsequent behavior.",
           "next": "taste-hunger"
         },
         {
           "id": "deceived",
           "label": "Bacteria can taste good and still be harmful",
+          "summary": "You concluded that bacteria can taste fine and still be harmful — the contact chemosensory test can be fooled, and the real interaction happens inside the gut.",
           "explanation": "True — and this is one reason gut colonization effects on behavior are so significant. A bacterium that colonizes successfully has passed the taste test. What happens inside the gut is the real interaction.",
           "next": "taste-hunger"
         }
@@ -542,18 +576,21 @@
         {
           "id": "time",
           "label": "How long since you last ate",
+          "summary": "You found that hunger is not a clock — it is a chemical state set by intertissue signals currently circulating from the gut, not by elapsed time alone.",
           "explanation": "Time matters — but the worm's nervous system doesn't run a clock for hunger. What matters is the current state of intertissue signaling: what molecules are circulating, what the gut is sending.",
           "next": "taste-intertissue"
         },
         {
           "id": "chemical",
           "label": "Chemical signals traveling from your gut to your brain",
+          "summary": "You discovered that hunger is encoded as a distributed chemical state — gut-produced molecules travel through body fluid and directly change how neurons respond.",
           "explanation": "Yes — this is the core mechanism. The gut produces molecules that travel through the body fluid and reach neurons directly, changing how they respond. Hunger is encoded as a distributed chemical state, not a single sensor.",
           "next": "taste-intertissue"
         },
         {
           "id": "fat",
           "label": "How much energy you've stored in fat",
+          "summary": "You found that energy stores matter long-term, but that gut-derived signals update hunger state in real time with each meal — a more dynamic readout than fat alone.",
           "explanation": "Energy stores matter in the long term, but the immediate regulation is more dynamic. Gut-derived signals provide a real-time readout of nutritional state that updates with each meal.",
           "next": "taste-intertissue"
         }
@@ -575,12 +612,14 @@
         {
           "id": "gut-brain",
           "label": "So my gut is controlling my brain?",
+          "summary": "You realized your gut is an endocrine organ — it broadcasts metabolic state to your nervous system through body fluid, and neurons integrate those signals to regulate hunger.",
           "explanation": "In a sense — yes. The gut isn't just a digestive organ in C. elegans. It's an endocrine organ that broadcasts metabolic state to the nervous system. Neurons don't run hunger on their own — they integrate signals from the gut.",
           "next": "taste-endpoint"
         },
         {
           "id": "humans",
           "label": "Is this like the gut-brain axis in humans?",
+          "summary": "You recognized that the gut-brain axis is conserved from worms to humans — the same logic of gut-derived signals modulating feeding, mood, and behavior operates across animal evolution.",
           "explanation": "Very much so. The molecules differ in detail, but the architecture is similar: gut-derived signals (hormones, metabolites, microbial products) reach the brain and modulate feeding, mood, and behavior. C. elegans gives us a tractable system to dissect the mechanism.",
           "next": "taste-endpoint"
         }
@@ -614,18 +653,21 @@
         {
           "id": "reverse",
           "label": "Reversed immediately",
+          "summary": "You reversed immediately when your ASH nociceptive neurons detected a harsh chemical — a default avoidance reflex driven through AVA command interneurons.",
           "explanation": "A classic avoidance response — ASH neurons trigger rapid reversal. This is the default: when in doubt, back up. But hunger can override this default, and the bacteria that colonize successfully are often ones that suppress the avoidance response.",
           "next": "touch-goodbad"
         },
         {
           "id": "pause",
           "label": "Paused to assess",
+          "summary": "You paused to integrate conflicting sensory signals before committing — a more nuanced response than reflexive avoidance, balancing smell, taste, and touch information.",
           "explanation": "A more nuanced response — sampling more before committing. Worms do this when the conflicting signals are balanced. The assessment integrates smell, taste, and touch information before deciding to approach or avoid.",
           "next": "touch-goodbad"
         },
         {
           "id": "forward",
           "label": "Kept going — hunger was stronger",
+          "summary": "You kept moving despite the warning — hunger had raised your threshold for what counts as dangerous, suppressing avoidance through neuromodulatory state changes.",
           "explanation": "Hunger suppresses avoidance. When food is scarce, the threshold for approaching something aversive drops. This makes evolutionary sense — a hungry worm that avoids all risk starves. The neuromodulatory state shifts what counts as 'too dangerous.'",
           "next": "touch-goodbad"
         }
@@ -651,18 +693,21 @@
         {
           "id": "smell",
           "label": "Smell tells me",
+          "summary": "You used olfactory signals as a first hypothesis about food quality — recognizing that smell is a starting point, not a verdict, and that contact and gut responses provide the real test.",
           "explanation": "Smell is useful but incomplete. You can detect some quality signals at a distance, but the full picture only emerges on contact and after eating. Smell is a hypothesis; taste and gut responses are the test.",
           "next": "touch-colonize"
         },
         {
           "id": "sample",
           "label": "I sample a little first",
+          "summary": "You sampled cautiously before committing — using contact chemosensation to assess the bacteria iteratively rather than treating the eat/avoid decision as all-or-nothing.",
           "explanation": "This is the taste-based approach — cautious ingestion, assessing contact-cues before committing. The 'good or bad' decision is made iteratively, not all at once.",
           "next": "touch-colonize"
         },
         {
           "id": "cant-tell",
           "label": "I might not be able to tell",
+          "summary": "You accepted that for some bacteria the distinction between safe and harmful only becomes clear after gut colonization — the sensory system has no signal to detect it at a distance.",
           "explanation": "For some bacteria, this is true — the distinction only becomes apparent after colonization. What matters then is what happens inside the gut. And that's where bacteria can influence behavior most directly.",
           "next": "touch-colonize"
         }
@@ -684,18 +729,21 @@
         {
           "id": "bacteria",
           "label": "The bacteria changed my nervous system",
+          "summary": "You recognized that gut bacteria had directly altered your nervous system — producing metabolites that entered circulation, reached neurons, and changed their activity.",
           "explanation": "Directly — yes. Bacteria produce metabolites that enter circulation, reach neurons, and change their activity. The nervous system didn't 'decide' in isolation; it was biochemically altered by its gut contents.",
           "next": "touch-movement"
         },
         {
           "id": "nervous",
           "label": "My nervous system decided this was worth staying for",
+          "summary": "You saw that your behavioral decision was made with a nervous system already changed by gut bacteria — making it difficult to separate your choice from the bacteria's chemical influence.",
           "explanation": "Also true — but the decision was made with a nervous system already modified by bacterial metabolites. It's hard to separate 'my' decision from the influence of what's in my gut.",
           "next": "touch-movement"
         },
         {
           "id": "both",
           "label": "Both — the bacteria influenced my nervous system's decision",
+          "summary": "You understood that bacteria and your nervous system co-regulate behavior — the nervous system integrates sensory input and internal state, but that state was set by gut colonization.",
           "explanation": "This is the most complete answer. The nervous system integrates sensory information and internal state — but the internal state was set by gut colonization. Bacteria and worm nervous system are co-regulating the outcome.",
           "next": "touch-movement"
         }
@@ -717,12 +765,14 @@
         {
           "id": "hijack",
           "label": "So bacteria are hijacking my motor system?",
+          "summary": "You questioned whether gut bacteria were hijacking your motor circuit — and found the honest answer is that they shift the AVB/AVA neurotransmitter balance, producing behavior that benefits their own dispersal.",
           "explanation": "'Hijacking' implies intent — which we can't know yet. What we can say: bacteria produce chemicals that shift the neurotransmitter balance in the worm's motor circuit, producing behavior that benefits the bacteria's dispersal. Whether this is evolved manipulation or a byproduct is the open question.",
           "next": "touch-endpoint"
         },
         {
           "id": "other-animals",
           "label": "Does this happen in other animals?",
+          "summary": "You recognized that gut-to-brain-to-behavior signaling is conserved across all animals with a gut — the same principle that operates in worms governs feeding, mood, and behavior in humans.",
           "explanation": "Almost certainly — the gut-brain-behavior axis exists in every animal with a gut and a nervous system. The mechanisms differ, but the principle is conserved: gut contents modulate nervous system state. C. elegans lets us trace the exact pathway.",
           "next": "touch-endpoint"
         }

@@ -235,3 +235,26 @@ Two meters in a second status bar row labeled "GUT":
 ## Bag animation — completed
 
 Flood-fill body mask using `##[10+ spaces]` seed (inner wall → cavity) + diagonal `#` dilation to seal staircase corners. 25 baby worms with per-worm `freq` and `amp` variation. Body-clipped tail rendering (segments outside mask are dropped). Canvas 300px tall to fit 53-row adult outline art.
+
+---
+
+## Narrative path summary (implemented)
+
+**Where it appears:**
+- **Death:** prepended before the death narrative, separated by a blank line
+- **Edge-of-knowledge endpoint:** prepended before the endpoint narrative, separated by a blank line
+- **Bag:** NOT shown — bag is a continuation, not an ending; the player retains all game state
+
+**Format:** Past-tense sentences joined by spaces with no paragraph breaks between them. One sentence per choice made.
+
+**Source:** Each choice in `nodes.json` has a `"summary"` field — a single past-tense sentence capturing the scientific takeaway of that choice. `buildPathSummary()` reads `state.history`, looks up each `choice.summary`, and joins them with a single space character.
+
+**Exclusions from summary:**
+- Loop-back choices (where `choice.next === nodeId`) — the `vision` choice in `detect` is the primary case
+- Choices without a `summary` field are silently skipped
+
+**"Interested in learning more?" on death:**
+- A second button/link appears alongside "Try again" at the bottom of the death card
+- Links to `https://odonnell-lab-website.pages.dev/join.html` in a new tab
+- Styled as a ghost button in `var(--accent2)` (teal), matching the endpoint CTA color family
+- Implemented as `<a class="death-learn-more">` inside a `.death-actions` flex row
