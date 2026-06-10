@@ -8,21 +8,24 @@
     "choices": [
       {
         "id": "hunger-stomach",
-        "label": "My stomach feels empty \u2014 a physical sensation",
-        "summary": "You found that hunger involves more than stretch receptors \u2014 it is a whole-body chemical state that cannot be explained by a single sensation.",
-        "explanation": "Close \u2014 but it's more than that. Physical stretch receptors in your gut do contribute, but hunger is a whole-body state that involves chemical signals too. Stretch alone doesn't explain why you're hungrier after a long time even with water in your stomach."
+        "label": "My gut feels empty \u2014 a physical sensation",
+        "summary": "You learned that hunger involves more than stretch receptors \u2014 it is a whole-body chemical state that cannot be explained by a single sensation.",
+        "explanation": "Possibly \u2014 but it's likely more than that. Physical stretch receptors in your gut may contribute, but it's not entirely clear how. Hunger is a whole-body state that involves chemical signals too.",
+        "papers": ["hughes-2021-g3", "bayer-2025-curr-biol", "filipowicz-2021-elife", "park-2024-nat-commun"]
       },
       {
         "id": "hunger-chemical",
         "label": "Chemical signals traveling through my body fluid",
         "summary": "You discovered that hunger is signalled by molecules traveling through body fluid \u2014 there are no dedicated hunger nerves, just chemistry.",
-        "explanation": "Yes \u2014 and this is core to how C. elegans works. There are no dedicated hunger nerves. Instead, molecules produced by the gut and other tissues travel through the body and change how neurons respond. Your entire behavioral state can be reset by a single molecule."
+        "explanation": "Yes \u2014 and this is core to how C. elegans works. Some neurons can sense food when it is ingested, but there are no dedicated hunger nerves. Instead, molecules produced by the gut, neurons and other tissues travel through the body and change how neurons respond. In some cases, your entire behavioral state can be reset by the release of a single molecule.",
+        "papers": ["odonnell-2018-plos-genetics", "malaiwong-2025-biorxiv", "rhoades-2019-cell", "estrem-2026-curr-biol", "feng-2025-nat-commun", "hyun-2016-sci-rep", "flavell-2013-cell", "you-2008-cell-metab", "benarous-2009-plos-one", "choi-2013-neuron", "sze-2000-nature", "davis-2018-sci-rep", "gallagher-2013-j-neurosci"]
       },
       {
         "id": "hunger-brain",
         "label": "My brain is counting how long since I last ate",
-        "summary": "You learned that hunger integrates time, energy stores, and gut chemical signals \u2014 and that the molecules involved are conserved in humans.",
-        "explanation": "Partly \u2014 but clocks alone aren't enough. The nervous system integrates time, energy stores, and chemical signals from the gut. What's remarkable is that much of this signaling is conserved: the molecules C. elegans uses overlap with ones that regulate hunger in humans."
+        "summary": "You learned that hunger integrates time, energy stores, and gut chemical signals \u2014 and that many of the molecules involved are conserved in humans.",
+        "explanation": "Partly \u2014 but clocks alone aren't enough. The nervous system integrates time, energy stores, and chemical signals from the gut. What's remarkable is that much of this signaling is conserved: the molecules C. elegans uses overlap with ones that regulate hunger in humans.",
+        "papers": ["millet-2025-elife", "bonnard-2022-elife", "chao-2004-nat-neurosci"]
       }
     ],
     "papers": [
