@@ -1,4 +1,5 @@
 {
+  "$schema": "../schemas/nodes-schema.json",
   "hunger_prompt": {
     "id": "hunger-critical",
     "phase": "HUNGER",
@@ -24,16 +25,8 @@
         "explanation": "Partly — but clocks alone aren't enough. The nervous system integrates time, energy stores, and chemical signals from the gut. What's remarkable is that much of this signaling is conserved: the molecules C. elegans uses overlap with ones that regulate hunger in humans."
       }
     ],
-    "papers": [
-      {
-        "label": "O'Donnell et al., PLoS Genetics 2018",
-        "url": "https://doi.org/10.1371/journal.pgen.1007213"
-      },
-      {
-        "label": "Malaiwong et al., bioRxiv 2025",
-        "url": "https://doi.org/10.1101/2025.10.20.683577"
-      }
-    ]
+    "papers": ["odonnell-2018-plos-genetics", "malaiwong-2025-biorxiv"],
+    "morePapers": []
   },
   "nodes": {
     "locomotion-forward": {
@@ -61,16 +54,8 @@
           "explanation": "Sometimes — mechanosensory neurons directly trigger reversals on contact. But most reversals happen without any touch: the nervous system generates them spontaneously as a searching strategy when food is absent. It's a built-in exploratory program."
         }
       ],
-      "papers": [
-        {
-          "label": "Bargmann, WormBook 2006",
-          "url": "https://doi.org/10.1895/wormbook.1.46.1"
-        },
-        {
-          "label": "O'Donnell et al., Nature 2020",
-          "url": "https://doi.org/10.1038/s41586-020-2395-5"
-        }
-      ]
+      "papers": ["bargmann-2006-wormbook-loco", "odonnell-2020-nature"],
+      "morePapers": []
     },
     "pathogen-encounter": {
       "id": "pathogen-encounter",
@@ -97,16 +82,8 @@
           "explanation": "Some pathogens are only dangerous in large doses or require gut colonization to cause harm. C. elegans can ingest mildly pathogenic bacteria and survive. But others kill via toxins or immune activation. The sensory system evolved to make this distinction — imperfectly."
         }
       ],
-      "papers": [
-        {
-          "label": "Schiffer et al., PLOS Pathogens 2021",
-          "url": "https://doi.org/10.1371/journal.ppat.1010112"
-        },
-        {
-          "label": "Bargmann & Horvitz, Science 1991",
-          "url": "https://doi.org/10.1126/science.1749929"
-        }
-      ]
+      "papers": ["schiffer-2021-plos-pathogens", "bargmann-1991-science"],
+      "morePapers": ["kaplan-1993-pnas"]
     },
     "predator-encounter": {
       "id": "predator-encounter",
@@ -141,24 +118,8 @@
           "next": "death-predator"
         }
       ],
-      "papers": [
-        {
-          "label": "Maguire et al., Curr Biol 2011",
-          "url": "https://doi.org/10.1016/j.cub.2011.06.063"
-        },
-        {
-          "label": "Hsueh et al., eLife 2017",
-          "url": "https://doi.org/10.7554/eLife.20023"
-        },
-        {
-          "label": "Yu et al., Nat Commun 2021",
-          "url": "https://doi.org/10.1038/s41467-021-25535-1"
-        },
-        {
-          "label": "Lin et al., iScience 2025",
-          "url": "https://doi.org/10.1016/j.isci.2025.112792"
-        }
-      ],
+      "papers": ["maguire-2011-curr-biol", "hsueh-2017-elife", "yu-2021-nat-commun", "lin-2025-isci"],
+      "morePapers": [],
       "science": "Nematophagous fungi use multiple strategies. Some produce repellent volatiles. Others, like Arthrobotrys oligospora, mimic C. elegans sex pheromones and food odorants to lure prey. The touch circuit (via mechanosensory neurons) can trigger escape after contact with hyphae."
     },
     "pharynx-intro": {
@@ -182,16 +143,8 @@
           "explanation": "The intestine does absorb nutrients — but the pharynx has to process bacteria first. No pumping means no food intake, even surrounded by bacteria. Every green flash in this recording is one pump cycle. You can now eat — press [E] while near food."
         }
       ],
-      "papers": [
-        {
-          "label": "Avery & Horvitz, Neuron 1989",
-          "url": "https://doi.org/10.1016/0896-6273(89)90092-2"
-        },
-        {
-          "label": "Avery & Shtonda, J Exp Biol 2003",
-          "url": "https://doi.org/10.1242/jeb.00375"
-        }
-      ],
+      "papers": ["avery-1989-neuron", "avery-2003-j-exp-biol"],
+      "morePapers": ["song-2013-elife"],
       "science": "The pharynx is a self-contained neuromuscular system of 20 neurons. The MC neuron times each pump cycle; M3 regulates relaxation between cycles; NSM encodes food presence via serotonin and accelerates pumping rate. The pm5 grinder muscle crushes bacteria against cuticular ridges, lysing most cells before they reach the intestine."
     },
     "detect": {
@@ -206,16 +159,7 @@
           "sublabel": "chemicals drifting through the air guided me here",
           "summary": "You found food by following volatile chemicals through the air, detected by your AWC and AWA olfactory neurons using cGMP signaling.",
           "science": "Smell: AWC and AWA neurons detect volatile odorants. AWC mediates attraction to isoamyl alcohol, butanone, and other volatile odorants; AWA neurons detect additional volatile compounds including diacetyl and pyrazine. AWC neurons use a cGMP signaling pathway via the TAX-4/TAX-2 cyclic nucleotide-gated channel. Different odorants are detected by somewhat non-overlapping sets of neurons but the olfactory identity may be encoded by the combinations of neurons activated by an odor.",
-          "papers": [
-            {
-              "label": "Bargmann & Horvitz, Science 1991",
-              "url": "https://doi.org/10.1126/science.1749929"
-            },
-            {
-              "label": "Bargmann, WormBook 2006",
-              "url": "https://doi.org/10.1895/wormbook.1.123.1"
-            }
-          ],
+          "papers": ["bargmann-1991-science", "bargmann-2006-wormbook"],
           "next": "smell-familiar"
         },
         {
@@ -224,16 +168,7 @@
           "sublabel": "I sampled the substrate as I crawled",
           "summary": "You found food by tasting dissolved ions on the soil surface, using your bilaterally asymmetric ASE neurons — ASEL and ASER detecting different chemical signatures.",
           "science": "Taste: ASE, ASG, and ASH neurons detect dissolved ions and chemicals on contact. ASE left/right neurons are bilaterally asymmetric: ASEL detects Na⁺, Cl⁻, and cAMP; ASER detects K⁺, Cl⁻, and other ions. ASG and ASH also detect water-soluble chemicals on contact. ASH responds to noxious soluble compounds and drives avoidance. These neurons use cGMP and other second messengers to transduce chemical signals.",
-          "papers": [
-            {
-              "label": "Bargmann & Horvitz, Science 1991",
-              "url": "https://doi.org/10.1126/science.1749929"
-            },
-            {
-              "label": "Bargmann, WormBook 2006",
-              "url": "https://doi.org/10.1895/wormbook.1.123.1"
-            }
-          ],
+          "papers": ["bargmann-1991-science", "bargmann-2006-wormbook"],
           "next": "taste-search"
         },
         {
@@ -242,16 +177,7 @@
           "sublabel": "I felt something and investigated",
           "summary": "You found food by physical contact, detected by your ALM and AVM mechanosensory neurons using the MEC-4/MEC-2 ion channel complex.",
           "science": "Touch: mechanosensory neurons including ALM, AVM, PLM, and PVM respond to physical contact. ALM and AVM neurons mediate anterior body touch; PLM and PVM mediate posterior touch. These neurons use the degenerin/ENaC channel complex MEC-4/MEC-2 for mechanotransduction. They synapse onto command interneurons (AVD, PVC) that control forward and reverse locomotion. Gentle touch is distinct from the harsh/noxious touch detected by PVD and FLP neurons.",
-          "papers": [
-            {
-              "label": "Chalfie et al., J Neurosci 1985",
-              "url": "https://doi.org/10.1523/JNEUROSCI.05-04-00956.1985"
-            },
-            {
-              "label": "White et al., Phil Trans R Soc B 1986",
-              "url": "https://doi.org/10.1098/rstb.1986.0056"
-            }
-          ],
+          "papers": ["chalfie-1985-j-neurosci", "white-1986-phil-trans"],
           "next": "touch-aversive"
         },
         {
@@ -260,33 +186,12 @@
           "sublabel": "I could see the bacteria from a distance",
           "explanation": "Not quite. C. elegans has no eyes — no image-forming visual system at all. Its 302 neurons are wired for chemical, mechanical, and thermal sensing. While a few neurons respond to UV light as a damage warning, the worm is effectively blind to the world we see. Try one of the other senses.",
           "science": "C. elegans lacks photoreceptors capable of image formation entirely. The complete connectome (White et al. 1986) accounts for all 302 neurons — none form a visual circuit. ASJ neurons respond to short-wavelength UV light and mediate avoidance of potential DNA damage, but this is a simple light-sensitivity reflex with no spatial information — not vision.",
-          "papers": [
-            {
-              "label": "White et al., Phil Trans R Soc B 1986",
-              "url": "https://doi.org/10.1098/rstb.1986.0056"
-            }
-          ],
+          "papers": ["white-1986-phil-trans"],
           "next": "detect"
         }
       ],
-      "papers": [
-        {
-          "label": "Bargmann & Horvitz, Science 1991",
-          "url": "https://doi.org/10.1126/science.1749929"
-        },
-        {
-          "label": "Chalfie et al., J Neurosci 1985",
-          "url": "https://doi.org/10.1523/JNEUROSCI.05-04-00956.1985"
-        },
-        {
-          "label": "Bargmann, WormBook 2006",
-          "url": "https://doi.org/10.1895/wormbook.1.123.1"
-        },
-        {
-          "label": "White et al., Phil Trans R Soc B 1986",
-          "url": "https://doi.org/10.1098/rstb.1986.0056"
-        }
-      ],
+      "papers": ["bargmann-1991-science", "chalfie-1985-j-neurosci", "bargmann-2006-wormbook", "white-1986-phil-trans"],
+      "morePapers": ["bargmann-1993-cell", "zaslaver-2015-pnas"],
       "science": "Smell: AWC and AWA neurons detect volatile odorants that diffuse through air. Taste: ASE, ASG, and ASH neurons detect dissolved ions and chemicals on contact. Touch: mechanosensory neurons including ALM, AVM, PLM, and PVM respond to physical contact."
     },
     "smell-familiar": {
@@ -302,21 +207,8 @@
           "summary": "You approached familiar food, drawn by positive olfactory memory — your AWC neurons had undergone synaptic plasticity from prior food-odor pairing.",
           "explanation": "Pairing a food odor with a meal creates a lasting preference for that odor. AWC neurons adjust their response properties based on prior positive experience, increasing attraction to the food-associated smell. This is positive olfactory associative conditioning — the worm's nervous system stores a record of what was good to eat.",
           "science": "AWC^ON neurons undergo synaptic plasticity following food-odor pairing, increasing their calcium response to the conditioned odorant. This requires insulin/IGF-1 signaling (IIS) and is modulated by aging. Familiar food also triggers enhanced pharyngeal pumping via an endocrine serotonin signal from NSM neurons — familiarity drives both approach behavior and faster feeding.",
-          "next": "smell-goodbad",
-          "papers": [
-            {
-              "label": "Torayama et al., J Neurosci 2007",
-              "url": "https://doi.org/10.1523/JNEUROSCI.4312-06.2007"
-            },
-            {
-              "label": "Kauffman et al., PLoS Biol 2010",
-              "url": "https://doi.org/10.1371/journal.pbio.1000372"
-            },
-            {
-              "label": "Song et al., eLife 2013",
-              "url": "https://doi.org/10.7554/eLife.00329"
-            }
-          ]
+          "papers": ["torayama-2007-j-neurosci", "song-2013-elife"],
+          "next": "smell-goodbad"
         },
         {
           "id": "familiar-negative",
@@ -325,17 +217,9 @@
           "summary": "You avoided a familiar food that had made you sick — your nervous system had formed an aversive olfactory memory, mediated by serotonin from ADF neurons.",
           "explanation": "C. elegans also forms aversive olfactory memories. After a pathogenic experience, worms avoid the smell of that species even when healthy — a lasting behavioral change driven by serotonergic interneurons downstream of AWC. Learned avoidance can persist for hours and be transmitted transgenerationally.",
           "science": "Aversive olfactory conditioning requires serotonin from ADF chemosensory neurons and recruits AIY, AIB, and RIA interneurons downstream of AWC. The learned avoidance persists for hours after a single pathogenic encounter. Some forms can be transmitted to offspring via Piwi/PRG-1 and small RNA mechanisms, allowing transgenerational inheritance of pathogen avoidance.",
-          "next": "smell-goodbad",
-          "papers": [
-            {
-              "label": "Zhang et al., Nature 2005",
-              "url": "https://doi.org/10.1038/nature04216"
-            },
-            {
-              "label": "Ha et al., Neuron 2010",
-              "url": "https://doi.org/10.1016/j.neuron.2010.11.025"
-            }
-          ]
+          "papers": ["zhang-2005-nature", "ha-2010-neuron"],
+          "morePapers": ["moore-2019a-cell"],
+          "next": "smell-goodbad"
         },
         {
           "id": "novel",
@@ -344,33 +228,12 @@
           "summary": "You chose to explore a novel food source, navigating the explore/exploit tradeoff mediated by dopamine from mechanosensory neurons and serotonin from NSM.",
           "explanation": "When conditions change or past experience is uncertain, exploration makes sense. C. elegans varies the balance between exploiting known food and exploring new sources depending on starvation state, population density, and prior experience. The explore/exploit tradeoff is a fundamental principle of foraging that operates in every animal nervous system.",
           "science": "Dopamine from CEP/ADE mechanosensory neurons encodes food presence and suppresses area-restricted search (pirouettes). Serotonin from NSM encodes recent feeding history and drives local exploitation. The balance between these neuromodulatory systems sets the explore/exploit tradeoff — hungry worms pirouette frequently to search locally, then switch to long-range runs when they fail to find food.",
-          "next": "smell-goodbad",
-          "papers": [
-            {
-              "label": "Sawin et al., Neuron 2000",
-              "url": "https://doi.org/10.1016/S0896-6273(00)81199-X"
-            },
-            {
-              "label": "Hills et al., J Neurosci 2004",
-              "url": "https://doi.org/10.1523/JNEUROSCI.1569-03.2004"
-            },
-            {
-              "label": "Gray et al., PNAS 2005",
-              "url": "https://doi.org/10.1073/pnas.0409009101"
-            }
-          ]
+          "papers": ["sawin-2000-neuron", "hills-2004-j-neurosci", "gray-2005-pnas"],
+          "next": "smell-goodbad"
         }
       ],
-      "papers": [
-        {
-          "label": "Torayama et al., J Neurosci 2007",
-          "url": "https://doi.org/10.1523/JNEUROSCI.4312-06.2007"
-        },
-        {
-          "label": "Zhang et al., Nature 2005",
-          "url": "https://doi.org/10.1038/nature04216"
-        }
-      ],
+      "papers": ["torayama-2007-j-neurosci", "zhang-2005-nature"],
+      "morePapers": ["sternson-2013-curr-opin-neurobiol", "rengarajan-2019-pnas", "jang-2019-pnas", "ryu-2018-embo-j", "matty-2022-plos-genetics"],
       "science": "C. elegans forms both positive and aversive olfactory memories. AWC neurons adjust their response properties based on prior experience. Aversive olfactory conditioning engages AWC, serotonergic interneurons, and downstream circuit changes that can persist for hours and be transmitted across generations."
     },
     "smell-goodbad": {
@@ -401,24 +264,8 @@
           "next": "smell-eat"
         }
       ],
-      "papers": [
-        {
-          "label": "Worthy et al., PLOS ONE 2018",
-          "url": "https://doi.org/10.1371/journal.pone.0201158"
-        },
-        {
-          "label": "Zhang et al., J Biol Chem 2016",
-          "url": "https://doi.org/10.1074/jbc.M116.741132"
-        },
-        {
-          "label": "Zhang et al., Nature 2005",
-          "url": "https://doi.org/10.1038/nature04216"
-        },
-        {
-          "label": "Ha et al., Neuron 2010",
-          "url": "https://doi.org/10.1016/j.neuron.2010.11.025"
-        }
-      ],
+      "papers": ["worthy-2018-plos-one", "zhang-2016-jbc", "zhang-2005-nature", "ha-2010-neuron"],
+      "morePapers": ["meisel-2014-cell", "moore-2019b-cell", "kaletsky-2020-nature", "moore-2021-cell", "melo-2012-cell", "prakash-2021-embo-j"],
       "science": "There are no universal volatile markers distinguishing nutritious from harmful bacteria — attractive odorants are produced by both. However, C. elegans can learn via aversive olfactory conditioning to avoid specific pathogens, using a circuit involving AWC, AIY, and AIB neurons."
     },
     "smell-eat": {
@@ -442,16 +289,8 @@
           "next": "smell-change"
         }
       ],
-      "papers": [
-        {
-          "label": "O'Donnell et al., Nature 2020",
-          "url": "https://doi.org/10.1038/s41586-020-2395-5"
-        },
-        {
-          "label": "Zang et al., bioRxiv 2026",
-          "url": "https://doi.org/10.64898/2026.02.14.704838"
-        }
-      ],
+      "papers": ["odonnell-2020-nature", "zang-2026-biorxiv"],
+      "morePapers": [],
       "science": "Providencia bacteria produce tyramine in the worm gut. The host enzyme TBH converts tyramine to octopamine — a monoamine neurotransmitter analogous to norepinephrine in vertebrates."
     },
     "smell-change": {
@@ -482,16 +321,8 @@
           "next": "smell-endpoint"
         }
       ],
-      "papers": [
-        {
-          "label": "O'Donnell et al., Nature 2020",
-          "url": "https://doi.org/10.1038/s41586-020-2395-5"
-        },
-        {
-          "label": "Malaiwong et al., bioRxiv 2025",
-          "url": "https://doi.org/10.1101/2025.10.20.683577"
-        }
-      ],
+      "papers": ["odonnell-2020-nature", "malaiwong-2025-biorxiv"],
+      "morePapers": [],
       "science": "Octopamine acts on AWC chemosensory neurons via the SER-3 receptor, altering odorant-evoked calcium responses and shifting odor preference toward the colonizing bacterium."
     },
     "smell-endpoint": {
@@ -523,12 +354,8 @@
           "next": "taste-goodbad"
         }
       ],
-      "papers": [
-        {
-          "label": "Bargmann, WormBook 2006",
-          "url": "https://doi.org/10.1895/wormbook.1.46.1"
-        }
-      ],
+      "papers": ["bargmann-2006-wormbook-loco"],
+      "morePapers": [],
       "science": "C. elegans locomotion alternates between forward runs and reversals/turns. The frequency of each is modulated by sensory input and internal state, including hunger and the presence of food odors."
     },
     "taste-goodbad": {
@@ -559,13 +386,9 @@
           "next": "taste-hunger"
         }
       ],
-      "papers": [
-        {
-          "label": "O'Donnell et al., Nature 2020",
-          "url": "https://doi.org/10.1038/s41586-020-2395-5"
-        }
-      ],
-      "science": "ASE neurons detect dissolved ions and small molecules, providing contact-based chemosensory information. The gut epithelium provides additional assessment after ingestion."
+      "papers": ["odonnell-2020-nature"],
+      "morePapers": ["schiffer-2021-plos-pathogens", "meisel-2014-cell"],
+      "_note": "CITATION NEEDS PI INPUT: odonnell-2020-nature is wrong for this claim."
     },
     "taste-hunger": {
       "id": "taste-hunger",
@@ -595,12 +418,8 @@
           "next": "taste-intertissue"
         }
       ],
-      "papers": [
-        {
-          "label": "O'Donnell et al., PLoS Genetics 2018",
-          "url": "https://doi.org/10.1371/journal.pgen.1007213"
-        }
-      ],
+      "papers": ["odonnell-2018-plos-genetics"],
+      "morePapers": ["sternson-2013-curr-opin-neurobiol", "rengarajan-2019-pnas", "jang-2019-pnas"],
       "science": "Nutritional state in C. elegans is communicated from the intestine to the nervous system through multiple intertissue signaling pathways, including TORC2/Rictor-dependent routes and metabolite trafficking."
     },
     "taste-intertissue": {
@@ -624,16 +443,8 @@
           "next": "taste-endpoint"
         }
       ],
-      "papers": [
-        {
-          "label": "O'Donnell et al., PLoS Genetics 2018",
-          "url": "https://doi.org/10.1371/journal.pgen.1007213"
-        },
-        {
-          "label": "Malaiwong et al., bioRxiv 2025",
-          "url": "https://doi.org/10.1101/2025.10.20.683577"
-        }
-      ],
+      "papers": ["odonnell-2018-plos-genetics", "malaiwong-2025-biorxiv"],
+      "morePapers": ["matty-2022-plos-genetics"],
       "science": "Glucosylated metabolites produced in the intestine encode dietary history and travel between tissues to modulate sensory neuron responses. The pathway involves conserved biosynthetic and transport factors."
     },
     "taste-endpoint": {
@@ -672,16 +483,8 @@
           "next": "touch-goodbad"
         }
       ],
-      "papers": [
-        {
-          "label": "Bargmann & Horvitz, Science 1991",
-          "url": "https://doi.org/10.1126/science.1749929"
-        },
-        {
-          "label": "Kaplan & Horvitz, PNAS 1993",
-          "url": "https://doi.org/10.1073/pnas.90.6.2227"
-        }
-      ],
+      "papers": ["bargmann-1991-science", "kaplan-1993-pnas"],
+      "morePapers": ["chao-2004-nat-neurosci"],
       "science": "ASH polymodal nociceptive neurons respond to harsh chemicals, osmotic stress, and touch. They drive rapid reversals via the AVA command interneurons. Monoamine neuromodulators including octopamine and serotonin modulate this response based on context."
     },
     "touch-goodbad": {
@@ -712,13 +515,8 @@
           "next": "touch-colonize"
         }
       ],
-      "papers": [
-        {
-          "label": "Schiffer et al., PLOS Pathogens 2021",
-          "url": "https://doi.org/10.1371/journal.ppat.1010112"
-        }
-      ],
-      "science": "C. elegans uses multiple sensory channels to assess bacterial quality: volatile odorants (distance), contact chemosensation (close range), and gut-level responses (post-ingestion). Different bacteria exploit different points in this evaluation."
+      "papers": ["schiffer-2021-plos-pathogens"],
+      "morePapers": ["meisel-2014-cell"]
     },
     "touch-colonize": {
       "id": "touch-colonize",
@@ -748,12 +546,8 @@
           "next": "touch-movement"
         }
       ],
-      "papers": [
-        {
-          "label": "O'Donnell et al., Nature 2020",
-          "url": "https://doi.org/10.1038/s41586-020-2395-5"
-        }
-      ],
+      "papers": ["odonnell-2020-nature"],
+      "morePapers": ["zang-2026-biorxiv"],
       "science": "Colonization by tyramine-producing bacteria increases worm association with those bacteria. The effect requires tyramine-to-octopamine conversion in the host, demonstrating a bacterial metabolite → host neurotransmitter → behavior circuit."
     },
     "touch-movement": {
@@ -777,16 +571,8 @@
           "next": "touch-endpoint"
         }
       ],
-      "papers": [
-        {
-          "label": "O'Donnell et al., Nature 2020",
-          "url": "https://doi.org/10.1038/s41586-020-2395-5"
-        },
-        {
-          "label": "Zang et al., bioRxiv 2026",
-          "url": "https://doi.org/10.64898/2026.02.14.704838"
-        }
-      ],
+      "papers": ["odonnell-2020-nature", "zang-2026-biorxiv"],
+      "morePapers": [],
       "science": "Octopamine modulates the AVB/AVA interneuron balance that controls forward vs reverse locomotion. Elevated octopamine from gut bacteria shifts this balance toward forward movement, increasing time on bacterial lawns."
     },
     "touch-endpoint": {

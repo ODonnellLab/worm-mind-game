@@ -225,6 +225,12 @@ let state = {
 };
 
 let nodes = null;
+let REFS  = {};  // keyed by slug, loaded from odonnell-lab-website/data/references.json
+
+function resolveRefs(slugs) {
+  if (!slugs?.length) return [];
+  return slugs.map(s => REFS[s]).filter(Boolean);
+}
 
 // ── CANVAS ───────────────────────────────────────────────────────────────────
 
@@ -715,9 +721,10 @@ function showNode(id) {
   const papersScience = document.getElementById('papers-science');
   papersScience.textContent = node.science || '';
   papersScience.classList.remove('visible');
-  if (node.papers?.length) {
+  const nodePapers = resolveRefs(node.papers);
+  if (nodePapers.length) {
     papersSection.style.display = 'block';
-    papersList.innerHTML = node.papers.map(p =>
+    papersList.innerHTML = nodePapers.map(p =>
       `<a href="${p.url}" target="_blank" rel="noopener">→ ${p.label}</a>`).join('');
   } else {
     papersSection.style.display = 'none';
@@ -739,14 +746,14 @@ function handleChoice(node, choice, expDiv) {
   state.pendingChoiceId = choice.id;
   document.getElementById('continue-btn').classList.add('visible');
 
-  const papers = choice.papers?.length ? choice.papers : node.papers;
+  const choicePapers = resolveRefs(choice.papers?.length ? choice.papers : node.papers);
   const papersSection = document.getElementById('papers-section');
   const papersList    = document.getElementById('papers-list');
   const papersScience = document.getElementById('papers-science');
   papersScience.textContent = choice.science ?? node.science ?? '';
-  if (papers?.length) {
+  if (choicePapers.length) {
     papersSection.style.display = 'block';
-    papersList.innerHTML = papers.map(p =>
+    papersList.innerHTML = choicePapers.map(p =>
       `<a href="${p.url}" target="_blank" rel="noopener">→ ${p.label}</a>`).join('');
   }
 }
@@ -854,7 +861,7 @@ function showHungerPrompt() {
   const papersSection = document.getElementById('papers-section');
   const papersList    = document.getElementById('papers-list');
   papersSection.style.display = 'block';
-  papersList.innerHTML = hp.papers.map(p =>
+  papersList.innerHTML = resolveRefs(hp.papers).map(p =>
     `<a href="${p.url}" target="_blank" rel="noopener">→ ${p.label}</a>`).join('');
   document.getElementById('papers-list').classList.remove('visible');
   setModalBgImage(hp.image || null);
@@ -1252,12 +1259,27 @@ document.getElementById('lightbox').addEventListener('click', e => {
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 
+const REFS_URL = 'https://odonnell-lab-website.pages.dev/data/references.json';
+
 async function init() {
   try {
-    const resp = await fetch('data/nodes.json');
-    nodes = await resp.json();
+    const [nodesResp, refsResp] = await Promise.allSettled([
+      fetch('data/nodes.json'),
+      fetch(REFS_URL),
+    ]);
+    if (nodesResp.status === 'fulfilled') {
+      nodes = await nodesResp.value.json();
+    } else {
+      console.error('Could not load nodes.json', nodesResp.reason);
+      return;
+    }
+    if (refsResp.status === 'fulfilled') {
+      REFS = await refsResp.value.json();
+    } else {
+      console.warn('Could not load references.json — [H] papers will not display', refsResp.reason);
+    }
   } catch(e) {
-    console.error('Could not load nodes.json', e);
+    console.error('Init error', e);
     return;
   }
   render();

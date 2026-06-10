@@ -1,0 +1,208 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "worm-mind-game nodes.json",
+  "description": "Schema for data/nodes.json. Paper slugs must match keys in odonnell-lab-website/data/references.json.",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "hunger_prompt": {
+      "$ref": "#/definitions/node"
+    },
+    "nodes": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/node"
+      }
+    }
+  },
+  "definitions": {
+    "papersArray": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "avery-1989-neuron",
+          "avery-2003-j-exp-biol",
+          "bargmann-1991-science",
+          "bargmann-1993-cell",
+          "bargmann-2006-wormbook",
+          "bargmann-2006-wormbook-loco",
+          "chalasani-2010-plos-biol",
+          "chalfie-1985-j-neurosci",
+          "chao-2004-nat-neurosci",
+          "gray-2005-pnas",
+          "ha-2010-neuron",
+          "hills-2004-j-neurosci",
+          "hsueh-2017-elife",
+          "jang-2019-pnas",
+          "kaletsky-2020-nature",
+          "kaplan-1993-pnas",
+          "lin-2025-isci",
+          "maguire-2011-curr-biol",
+          "malaiwong-2025-biorxiv",
+          "matty-2022-plos-genetics",
+          "meisel-2014-cell",
+          "melo-2012-cell",
+          "moore-2019a-cell",
+          "moore-2019b-cell",
+          "moore-2021-cell",
+          "odonnell-2018-plos-genetics",
+          "odonnell-2020-nature",
+          "prakash-2021-embo-j",
+          "rengarajan-2019-pnas",
+          "ryu-2018-embo-j",
+          "sawin-2000-neuron",
+          "schiffer-2021-plos-pathogens",
+          "song-2013-elife",
+          "sternson-2013-curr-opin-neurobiol",
+          "torayama-2007-j-neurosci",
+          "white-1986-phil-trans",
+          "worthy-2018-plos-one",
+          "yu-2021-nat-commun",
+          "zang-2026-biorxiv",
+          "zaslaver-2015-pnas",
+          "zhang-2005-nature",
+          "zhang-2016-jbc"
+        ]
+      },
+      "description": "Reference slugs from references.json \u2014 shown in [H] during game."
+    },
+    "morePapersArray": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "avery-1989-neuron",
+          "avery-2003-j-exp-biol",
+          "bargmann-1991-science",
+          "bargmann-1993-cell",
+          "bargmann-2006-wormbook",
+          "bargmann-2006-wormbook-loco",
+          "chalasani-2010-plos-biol",
+          "chalfie-1985-j-neurosci",
+          "chao-2004-nat-neurosci",
+          "gray-2005-pnas",
+          "ha-2010-neuron",
+          "hills-2004-j-neurosci",
+          "hsueh-2017-elife",
+          "jang-2019-pnas",
+          "kaletsky-2020-nature",
+          "kaplan-1993-pnas",
+          "lin-2025-isci",
+          "maguire-2011-curr-biol",
+          "malaiwong-2025-biorxiv",
+          "matty-2022-plos-genetics",
+          "meisel-2014-cell",
+          "melo-2012-cell",
+          "moore-2019a-cell",
+          "moore-2019b-cell",
+          "moore-2021-cell",
+          "odonnell-2018-plos-genetics",
+          "odonnell-2020-nature",
+          "prakash-2021-embo-j",
+          "rengarajan-2019-pnas",
+          "ryu-2018-embo-j",
+          "sawin-2000-neuron",
+          "schiffer-2021-plos-pathogens",
+          "song-2013-elife",
+          "sternson-2013-curr-opin-neurobiol",
+          "torayama-2007-j-neurosci",
+          "white-1986-phil-trans",
+          "worthy-2018-plos-one",
+          "yu-2021-nat-commun",
+          "zang-2026-biorxiv",
+          "zaslaver-2015-pnas",
+          "zhang-2005-nature",
+          "zhang-2016-jbc"
+        ]
+      },
+      "description": "Extended reference list \u2014 shown on further-reading page only."
+    },
+    "choice": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "sublabel": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "explanation": {
+          "type": "string"
+        },
+        "science": {
+          "type": "string"
+        },
+        "next": {
+          "type": "string"
+        },
+        "papers": {
+          "$ref": "#/definitions/papersArray"
+        },
+        "morePapers": {
+          "$ref": "#/definitions/morePapersArray"
+        }
+      },
+      "required": [
+        "id",
+        "label"
+      ]
+    },
+    "node": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "phase": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "death",
+            "endpoint"
+          ]
+        },
+        "image": {
+          "type": "string"
+        },
+        "narrative": {
+          "type": "string"
+        },
+        "science": {
+          "type": "string"
+        },
+        "cta": {
+          "type": "string"
+        },
+        "header": {
+          "type": "string"
+        },
+        "choices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/choice"
+          }
+        },
+        "papers": {
+          "$ref": "#/definitions/papersArray"
+        },
+        "morePapers": {
+          "$ref": "#/definitions/morePapersArray"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    }
+  }
+}
