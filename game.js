@@ -743,17 +743,22 @@ function continueGame() {
   }
 
   // Restore any paused queue (from sidebar prompts)
+  // Death/endpoint routes take priority — don't swallow them into queue restoration
   if (state.savedQueue) {
-    if (state.savedQueue.proximityNodeId) {
-      state.proximityNodeId = state.savedQueue.proximityNodeId;
-    } else {
-      state.queuedNodeId   = state.savedQueue.nodeId;
-      state.movesRemaining = state.savedQueue.movesRemaining;
+    const nextNode = nextId ? getNode(nextId) : null;
+    if (!nextNode || (nextNode.type !== 'death' && nextNode.type !== 'endpoint')) {
+      if (state.savedQueue.proximityNodeId) {
+        state.proximityNodeId = state.savedQueue.proximityNodeId;
+      } else {
+        state.queuedNodeId   = state.savedQueue.nodeId;
+        state.movesRemaining = state.savedQueue.movesRemaining;
+      }
+      state.savedQueue = null;
+      state.phase = 'exploration';
+      render();
+      return;
     }
-    state.savedQueue = null;
-    state.phase = 'exploration';
-    render();
-    return;
+    state.savedQueue = null;  // death/endpoint fires below
   }
 
   if (nextId) {
@@ -894,7 +899,7 @@ function showBag() {
     "You begin laying eggs — but there's no food left. Your eggs hatch inside you. " +
     "The larvae eat your intestine first, then work outward. Your body becomes their first meal. " +
     "This is not a tragedy. It is the plan.\n\n" +
-    "A new generation begins, fed by everything you were.\n\n" +
+    "Your offspring emerge here, carrying what you learned. The world is unchanged.\n\n" +
     "Not everything is lost across generations.";
   document.getElementById('bag-narrative').textContent    = text;
   // wire [H] toggle
@@ -913,6 +918,31 @@ function showBag() {
   setModalBgImage(null);
   state.phase = 'endpoint';
   startBagArt();
+}
+
+function continueBag() {
+  stopBagArt();
+  // Carry pathogen history forward across generations
+  const parentPathogens = state.pathogenEaten > 0
+    ? [...state.parentPathogens, state.pathogenEaten]
+    : [...state.parentPathogens];
+
+  document.getElementById('bag-card').style.display      = 'none';
+  document.getElementById('modal-overlay').classList.remove('visible');
+
+  // Reset only energy and per-generation counters; keep position, history, path state
+  state.hunger           = 0;
+  state.hungerPromptFired = false;
+  state.pathogenEaten    = 0;
+  state.cutsceneActive   = false;
+  state.paused           = false;
+  state.phase            = 'exploration';
+  state.parentPathogens  = parentPathogens;
+  state.worm.tail        = [];
+  state.lastEatTime      = 0;
+
+  render();
+  showCutscene("A new generation begins.\nYou inherit your parent's world.");
 }
 
 // ── BAG ART ANIMATION ─────────────────────────────────────────────────────────
@@ -1182,7 +1212,7 @@ document.addEventListener('keydown', e => {
 
 document.getElementById('continue-btn').addEventListener('click', continueGame);
 document.getElementById('death-restart').addEventListener('click', () => resetGame(false));
-document.getElementById('bag-continue').addEventListener('click', () => resetGame(true));
+document.getElementById('bag-continue').addEventListener('click', continueBag);
 document.getElementById('papers-toggle').addEventListener('click', () => {
   document.getElementById('papers-list').classList.toggle('visible');
   document.getElementById('papers-science').classList.toggle('visible');

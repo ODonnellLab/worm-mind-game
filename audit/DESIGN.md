@@ -8,13 +8,16 @@
 |------|---------|----------|
 | `edge-of-knowledge` | Player reaches a research frontier insight | Full-screen endpoint + CTA to join page |
 | `death` | Wrong choice near predator or harmful food | "You died. Try again." — restart from beginning |
-| `bag` | Hunger meter fully depleted | Worm bags (reproduces), offspring continue — lifecycle event, not failure |
+| `bag` | Hunger meter fully depleted | Worm bags (reproduces) — resumes same position, same history, hunger reset |
 
 ---
 
-## Bag endpoint / transgenerational inheritance
+## Bag endpoint / transgenerational inheritance (updated)
 
-- Hunger depleted → worm reproduces → offspring start fresh
+- Hunger depleted → worm reproduces → **offspring resume at same world position with same prompt history**
+- Worm position, path state (proximityNodeId, etc.), history, eatUnlocked all preserved
+- Only hunger, pathogenEaten, hungerPromptFired reset — the world continues unchanged
+- `parentPathogens` array accumulates across bag events for potential transgenerational narrative variants
 - **If offspring encounter the SAME PATHOGEN the parent encountered**: variant narrative referencing parent's prior experience — "something about this organism feels familiar, though you've never encountered it yourself"
 - This is an **edge-of-knowledge** prompt: we know some pathogen-specific memory is transmitted (Kaletsky et al., Moore et al.) but we don't know if non-pathogenic bacteria exposure is transmitted to offspring
 - Non-pathogenic bacteria re-encounter by offspring: NO inherited memory (fresh start)
@@ -139,6 +142,25 @@ After all restructuring, update INDEX.md node status table to reflect:
 - New nodes: first-encounter, taste-perception, pathogen-goodbad (or variant)
 - Deprecated: smell-change
 - Modified: smell-eat (3rd choice), taste-search (3rd choice), predator-encounter (death choice), pathogen-encounter (routing)
+
+---
+
+## Gut content meters (to-do)
+
+Add two persistent meters to the status bar or a sidebar showing:
+- **Good bacteria load** — rises when eating good bacteria via [E], decays over time; drives the "colonization" narrative
+- **Harmful bacteria load** — rises when eating pathogens via [E] or pathogen-encounter; triggers escalating warnings and death at threshold
+- Meters should visually reflect the intertissue signaling narrative (gut ↔ nervous system)
+- Consider: good bacteria load could modulate neuromodulatory state (hunger suppression, behavioral change)
+- Data: these meters would replace / complement the current `pathogenEaten` integer counter
+
+---
+
+## Death route priority fix (implemented)
+
+**Bug:** When a sidebar prompt (e.g. predator-encounter) was interrupted with a savedQueue, the `continueGame` savedQueue restoration ran before the death/endpoint route check — silently swallowing death routes like the predator `ignore` choice.
+
+**Fix:** In `continueGame`, check whether `nextId` resolves to a death or endpoint node before restoring savedQueue. If so, discard the savedQueue and let death/endpoint fire normally.
 
 ---
 
